@@ -1,9 +1,9 @@
 // Для кнопок
 #include "GyverButton.h"
 
-#define BUT1_PIN 3
-#define BUT2_PIN 3
-#define BUT3_PIN 3
+#define BUT1_PIN A1
+#define BUT2_PIN A2
+#define BUT3_PIN A3
 
 GButton butt1(BUT1_PIN);
 GButton butt2(BUT2_PIN);
@@ -14,8 +14,8 @@ GButton butt3(BUT3_PIN);
 #include <SoftwareSerial.h>
 #include <DFRobotDFPlayerMini.h>
 
-#define SS_RX 7
-#define SS_TX 6
+#define SS_RX D9
+#define SS_TX D8
 #define directory_start 1 // Папка с мелодией старта
 #define trek_start  1 // Номер трека старта в папке мелодий старта
 #define directory_alarm 2 // Папка с мелодиями сигнализаций
@@ -27,19 +27,19 @@ DFRobotDFPlayerMini myDFPlayer;
 
 
 // Для часов
-#include <DS1302.h>
+// #include <DS1302.h>
 
-const int kCePin   = 5;  // Chip Enable
-const int kIoPin   = 6;  // Input/Output
-const int kSclkPin = 7;  // Serial Clock
-Time switch_vol_1(2013, 21, 00, 1, 38, 50, Time::kSunday); // Время переключения громкости 1
-Time switch_vol_2(2013, 8, 00, 1, 38, 50, Time::kSunday); // Время переключения громкости 2
+// const int kCePin   = 5;  // Chip Enable
+// const int kIoPin   = 6;  // Input/Output
+// const int kSclkPin = 7;  // Serial Clock
+// Time switch_vol_1(2013, 21, 00, 1, 38, 50, Time::kSunday); // Время переключения громкости 1
+// Time switch_vol_2(2013, 8, 00, 1, 38, 50, Time::kSunday); // Время переключения громкости 2
 
-DS1302 rtc(kCePin, kIoPin, kSclkPin);
+// DS1302 rtc(kCePin, kIoPin, kSclkPin);
 
 
 // Для входа сигнализации
-#define ALARM_PIN 1 // Пин подключения сигналов после оптореле
+#define ALARM_PIN A0 // Пин подключения сигналов после оптореле
 #define DELAY_SIGNALS 300 // Задержка между сигналами в миллисекундах
 
 unsigned long nowTime; // Последнее время срабатывания сигнала
@@ -68,8 +68,8 @@ void setup() {
   // Для сигнализации
   pinMode(ALARM_PIN, INPUT);
   // Часы
-  rtc.writeProtect(false);
-  rtc.halt(false);
+  // rtc.writeProtect(false);
+  // rtc.halt(false);
   // Подключение плеера
   // ADCSRA &= ~(1 << ADEN);
   if (!myDFPlayer.begin(mySoftwareSerial)) { // запуск плеера//инициализац//более 2 секунд
@@ -93,13 +93,13 @@ void loop() {
   }
 
   // Проверка времени
-  Time t = rtc.time();
-  if ((t.hr==switch_vol_1.hr) & (t.min==switch_vol_1.min)) {
-    volume = 15;
-  }
-  else if ((t.hr==switch_vol_2.hr) & (t.min==switch_vol_2.min)) {
-    volume = 30;
-  }
+  // Time t = rtc.time();
+  // if ((t.hr==switch_vol_1.hr) & (t.min==switch_vol_1.min)) {
+    // volume = 15;
+  // }
+  // else if ((t.hr==switch_vol_2.hr) & (t.min==switch_vol_2.min)) {
+    // volume = 30;
+  // }
 
 
   // Проверка кнопки
