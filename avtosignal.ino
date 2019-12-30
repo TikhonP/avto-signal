@@ -17,8 +17,10 @@ GButton butt3(BUT3_PIN);
 #define SS_RX D9
 #define SS_TX D8
 
-#define directory_alarm 2 // Папка с мелодиями сигнализаций
-#define directory_buttons 3 // Папка с мелодиями кнопок
+#define track_count = 5 // количесто треков в каждой папке
+#define directory_buttons_1 = 50 // Папка с мелодиями кнопок
+#define directory_buttons_2 = 51
+#define directory_buttons_3 = 52
 int volume = 15; // Гормкость 0-30
 
 SoftwareSerial mySoftwareSerial(SS_RX, SS_TX);  // RX, TX
@@ -73,9 +75,9 @@ void setup() {
   // Подключение плеера
   // ADCSRA &= ~(1 << ADEN);
   if (!myDFPlayer.begin(mySoftwareSerial)) { // запуск плеера//инициализац//более 2 секунд
-    Serial.println(F("Unable to begin:"));
-  Serial.println(F("1.Please recheck the connection!"));
-  Serial.println(F("2.Please insert the SD card!"));
+    Serial.println(F("Ошибка подключения плеера:"));
+    Serial.println(F("1.Проверьте подключение!"));
+    Serial.println(F("2.Пожалуйста, вставьте cd карту!"));
        while(true);
       }
        myDFPlayer.setTimeOut(500);
@@ -91,7 +93,7 @@ void loop() {
       nowTime = millis(); // Запись текущего времени в миллисекундах,
                           // прошедшего с момента запуска, в переменную nowTime
       signals = readCommand();
-      myDFPlayer.playFolder(directory_start, signals);
+      myDFPlayer.playFolder(signals, random(track_count));
   }
 
   // Проверка времени
@@ -110,16 +112,16 @@ void loop() {
   butt3.tick();
 
   if (butt1.isSingle()) {
-    // first btn single
+    myDFPlayer.playFolder(directory_buttons_1, random(track_count));
   }
   if (butt2.isSingle()) {
-    // second btn single
+    myDFPlayer.playFolder(directory_buttons_2, random(track_count));
   }
   if (butt3.isSingle()) {
-    // third btn single
+    myDFPlayer.playFolder(directory_buttons_3, random(track_count));
   }
   if (butt1.isHold()) {
-    myDFPlayer.playFolder(directory_buttons, 1);
+    myDFPlayer.playFolder(directory_buttons_1, random(track_count));
     nowTime = millis();
     while ((millis()-nowTime)<3000) {
       if (butt1.isRelease()) {
@@ -129,7 +131,7 @@ void loop() {
     }
   }
   if (butt2.isHold()) {
-    myDFPlayer.playFolder(directory_buttons, 2);
+    myDFPlayer.playFolder(directory_buttons_2, random(track_count));
     nowTime = millis();
     while ((millis()-nowTime)<3000) {
       if (butt1.isRelease()) {
@@ -139,7 +141,7 @@ void loop() {
     }
   }
   if (butt3.isHold()) {
-    myDFPlayer.playFolder(directory_buttons, 3);
+    myDFPlayer.playFolder(directory_buttons_3, random(track_count));
     nowTime = millis();
     while ((millis()-nowTime)<3000) {
       if (butt1.isRelease()) {
