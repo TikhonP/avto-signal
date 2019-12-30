@@ -16,8 +16,7 @@ GButton butt3(BUT3_PIN);
 
 #define SS_RX D9
 #define SS_TX D8
-#define directory_start 1 // Папка с мелодией старта
-#define trek_start  1 // Номер трека старта в папке мелодий старта
+
 #define directory_alarm 2 // Папка с мелодиями сигнализаций
 #define directory_buttons 3 // Папка с мелодиями кнопок
 int volume = 15; // Гормкость 0-30
@@ -64,6 +63,7 @@ int readCommand() {
 
 
 void setup() {
+  mySoftwareSerial.begin(9600);
   Serial.begin(9600); // Вывод
   // Для сигнализации
   pinMode(ALARM_PIN, INPUT);
@@ -73,13 +73,15 @@ void setup() {
   // Подключение плеера
   // ADCSRA &= ~(1 << ADEN);
   if (!myDFPlayer.begin(mySoftwareSerial)) { // запуск плеера//инициализац//более 2 секунд
-       Serial.println("st ?");
+    Serial.println(F("Unable to begin:"));
+  Serial.println(F("1.Please recheck the connection!"));
+  Serial.println(F("2.Please insert the SD card!"));
        while(true);
       }
+       myDFPlayer.setTimeOut(500);
   myDFPlayer.outputDevice(DFPLAYER_DEVICE_SD);
   myDFPlayer.volume(volume);   //громкость (0~30).
    myDFPlayer.EQ(DFPLAYER_EQ_NORMAL);
-   myDFPlayer.playFolder(directory_start, trek_start); // играем старт (короткую мелодию из первой папки)
    delay(200);  // даем немного времени,ждем начало проигрывания//уснем после проигрывания мелодии старта
 }
 
