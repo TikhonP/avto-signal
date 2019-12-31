@@ -17,6 +17,7 @@ GButton butt3(BUT3_PIN);
 #define SS_RX D9
 #define SS_TX D8
 
+#define track_button_count 2 // Количесто треков на кнопку
 #define track_count = 5 // количесто треков в каждой папке
 #define directory_buttons_1 = 50 // Папка с мелодиями кнопок
 #define directory_buttons_2 = 51
@@ -42,6 +43,7 @@ DFRobotDFPlayerMini myDFPlayer;
 // Для входа сигнализации
 #define ALARM_PIN A0 // Пин подключения сигналов после оптореле
 #define DELAY_SIGNALS 300 // Задержка между сигналами в миллисекундах
+bool is_alrm = false;
 
 unsigned long nowTime; // Последнее время срабатывания сигнала
 int signals;
@@ -49,105 +51,111 @@ int signals;
 
 // Функция для подсчета количества сигналов
 int readCommand() {
-  int signalsCount = 1; // Количесво поступающих сигналов
-  while (true) {
-    if ((millis() - nowTime)>DELAY_SIGNALS) {
-      return signalsCount;
-    }
-    if (digitalRead(ALARM_PIN)) {
-      nowTime = millis();
-      signalsCount++;
-    }
-  }
+        int signalsCount = 1; // Количесво поступающих сигналов
+        while (true) {
+                if ((millis() - nowTime)>DELAY_SIGNALS) {
+                        return signalsCount;
+                }
+                if (digitalRead(ALARM_PIN)) {
+                        nowTime = millis();
+                        signalsCount++;
+                }
+        }
 
 }
 
 
 
 void setup() {
-  mySoftwareSerial.begin(9600);
-  Serial.begin(9600); // Вывод
-  // Для сигнализации
-  pinMode(ALARM_PIN, INPUT);
-  // Часы
-  // rtc.writeProtect(false);
-  // rtc.halt(false);
-  // Подключение плеера
-  // ADCSRA &= ~(1 << ADEN);
-  if (!myDFPlayer.begin(mySoftwareSerial)) { // запуск плеера//инициализац//более 2 секунд
-    Serial.println(F("Ошибка подключения плеера:"));
-    Serial.println(F("1.Проверьте подключение!"));
-    Serial.println(F("2.Пожалуйста, вставьте cd карту!"));
-       while(true);
-      }
-       myDFPlayer.setTimeOut(500);
-  myDFPlayer.outputDevice(DFPLAYER_DEVICE_SD);
-  myDFPlayer.volume(volume);   //громкость (0~30).
-   myDFPlayer.EQ(DFPLAYER_EQ_NORMAL);
-   delay(200);  // даем немного времени,ждем начало проигрывания//уснем после проигрывания мелодии старта
+        mySoftwareSerial.begin(9600);
+        Serial.begin(9600); // Вывод
+        // Для сигнализации
+        pinMode(ALARM_PIN, INPUT);
+        attachInterrupt(digitalPinToInterrupt(ALARM_PIN), inter_alrm, RISING);
+        // Часы
+        // rtc.writeProtect(false);
+        // rtc.halt(false);
+        // Подключение плеера
+        // ADCSRA &= ~(1 << ADEN);
+        if (!myDFPlayer.begin(mySoftwareSerial)) { // запуск плеера//инициализац//более 2 секунд
+                Serial.println(F("Ошибка подключения плеера:"));
+                Serial.println(F("1.Проверьте подключение!"));
+                Serial.println(F("2.Пожалуйста, вставьте cd карту!"));
+                while(true);
+        }
+        myDFPlayer.setTimeOut(500);
+        myDFPlayer.outputDevice(DFPLAYER_DEVICE_SD);
+        myDFPlayer.volume(volume); //громкость (0~30).
+        myDFPlayer.EQ(DFPLAYER_EQ_NORMAL);
+        delay(200); // даем немного времени,ждем начало проигрывания//уснем после проигрывания мелодии старта
 }
 
 void loop() {
-  // Проверка входа сигнализации
-  if (digitalRead(ALARM_PIN)) {
-      nowTime = millis(); // Запись текущего времени в миллисекундах,
-                          // прошедшего с момента запуска, в переменную nowTime
-      signals = readCommand();
-      myDFPlayer.playFolder(signals, random(track_count));
-  }
+        // Проверка входа сигнализации
+        if (is_alrm) {
+                nowTime = millis(); // Запись текущего времени в миллисекундах,
+                                    // прошедшего с момента запуска, в переменную nowTime
+                signals = readCommand();
+                myDFPlayer.playFolder(signals, random(track_count));
+        }
 
-  // Проверка времени
-  // Time t = rtc.time();
-  // if ((t.hr==switch_vol_1.hr) & (t.min==switch_vol_1.min)) {
-    // volume = 15;
-  // }
-  // else if ((t.hr==switch_vol_2.hr) & (t.min==switch_vol_2.min)) {
-    // volume = 30;
-  // }
+        // Проверка времени
+        // Time t = rtc.time();
+        // if ((t.hr==switch_vol_1.hr) & (t.min==switch_vol_1.min)) {
+        // volume = 15;
+        // }
+        // else if ((t.hr==switch_vol_2.hr) & (t.min==switch_vol_2.min)) {
+        // volume = 30;
+        // }
 
 
-  // Проверка кнопки
-  butt1.tick();
-  butt2.tick();
-  butt3.tick();
+        // Проверка кнопки
+        butt1.tick();
+        butt2.tick();
+        butt3.tick();
 
-  if (butt1.isSingle()) {
-    myDFPlayer.playFolder(directory_buttons_1, random(track_count));
-  }
-  if (butt2.isSingle()) {
-    myDFPlayer.playFolder(directory_buttons_2, random(track_count));
-  }
-  if (butt3.isSingle()) {
-    myDFPlayer.playFolder(directory_buttons_3, random(track_count));
-  }
-  if (butt1.isHold()) {
-    myDFPlayer.playFolder(directory_buttons_1, random(track_count));
-    nowTime = millis();
-    while ((millis()-nowTime)<3000) {
-      if (butt1.isRelease()) {
-        myDFPlayer.pause();
-        break;
-      }
-    }
-  }
-  if (butt2.isHold()) {
-    myDFPlayer.playFolder(directory_buttons_2, random(track_count));
-    nowTime = millis();
-    while ((millis()-nowTime)<3000) {
-      if (butt1.isRelease()) {
-        myDFPlayer.pause();
-        break;
-      }
-    }
-  }
-  if (butt3.isHold()) {
-    myDFPlayer.playFolder(directory_buttons_3, random(track_count));
-    nowTime = millis();
-    while ((millis()-nowTime)<3000) {
-      if (butt1.isRelease()) {
-        myDFPlayer.pause();
-        break;
-      }
-    }
-  }
+        if (butt1.isSingle()) {
+                myDFPlayer.playFolder(directory_buttons_1, random(track_button_count));
+        }
+        if (butt2.isSingle()) {
+                myDFPlayer.playFolder(directory_buttons_2, random(track_button_count));
+        }
+        if (butt3.isSingle()) {
+                myDFPlayer.playFolder(directory_buttons_3, random(track_button_count));
+        }
+        if (butt1.isHold()) {
+                myDFPlayer.playFolder(directory_buttons_1, random(track_button_count));
+                nowTime = millis();
+                while ((millis()-nowTime)<3000) {
+                        if (butt1.isRelease()) {
+                                myDFPlayer.pause();
+                                break;
+                        }
+                }
+        }
+        if (butt2.isHold()) {
+                myDFPlayer.playFolder(directory_buttons_2, random(track_button_count));
+                nowTime = millis();
+                while ((millis()-nowTime)<3000) {
+                        if (butt1.isRelease()) {
+                                myDFPlayer.pause();
+                                break;
+                        }
+                }
+        }
+        if (butt3.isHold()) {
+                myDFPlayer.playFolder(directory_buttons_3, random(track_button_count));
+                nowTime = millis();
+                while ((millis()-nowTime)<3000) {
+                        if (butt1.isRelease()) {
+                                myDFPlayer.pause();
+                                break;
+                        }
+                }
+        }
+}
+
+
+void inter_alrm() {
+        is_alrm = true;
 }
