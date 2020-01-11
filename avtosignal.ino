@@ -14,14 +14,15 @@ GButton butt3(BUT3_PIN);
 #include <SoftwareSerial.h>
 #include <DFRobotDFPlayerMini.h>
 
-#define SS_RX D9
-#define SS_TX D8
+#define SS_RX 9
+#define SS_TX 8
 
-#define track_button_count 2 // Количесто треков на кнопку
-#define track_count = 5 // количесто треков в каждой папке
-#define directory_buttons_1 = 50 // Папка с мелодиями кнопок
-#define directory_buttons_2 = 51
-#define directory_buttons_3 = 52
+#define track_lenth 3000 // Длинна трека в милисекундах для проверки
+#define directory_buttons_1 50 // Папка с мелодиями кнопок
+#define directory_buttons_2 51
+#define directory_buttons_3 52
+
+int track_count = 1; // количесто треков в каждой папке
 int volume = 15; // Гормкость 0-30
 
 SoftwareSerial mySoftwareSerial(SS_RX, SS_TX);  // RX, TX
@@ -41,7 +42,7 @@ DFRobotDFPlayerMini myDFPlayer;
 
 
 // Для входа сигнализации
-#define ALARM_PIN A0 // Пин подключения сигналов после оптореле
+#define ALARM_PIN 2 // Пин подключения сигналов после оптореле
 #define DELAY_SIGNALS 300 // Задержка между сигналами в миллисекундах
 bool is_alrm = false;
 
@@ -87,7 +88,8 @@ void setup() {
         myDFPlayer.outputDevice(DFPLAYER_DEVICE_SD);
         myDFPlayer.volume(volume); //громкость (0~30).
         myDFPlayer.EQ(DFPLAYER_EQ_NORMAL);
-        delay(200); // даем немного времени,ждем начало проигрывания//уснем после проигрывания мелодии старта
+        myDFPlayer.outputDevice(DFPLAYER_DEVICE_SD);
+        delay(200); // даем немного времени,ждем начало проигрывания
 }
 
 void loop() {
@@ -96,6 +98,9 @@ void loop() {
                 nowTime = millis(); // Запись текущего времени в миллисекундах,
                                     // прошедшего с момента запуска, в переменную nowTime
                 signals = readCommand();
+                myDFPlayer.pause();
+                delay(50);
+                track_count = myDFPlayer.readFileCountsInFolder(signals);
                 myDFPlayer.playFolder(signals, random(track_count));
         }
 
@@ -114,43 +119,39 @@ void loop() {
         butt2.tick();
         butt3.tick();
 
-        if (butt1.isSingle()) {
-                myDFPlayer.playFolder(directory_buttons_1, random(track_button_count));
-        }
-        if (butt2.isSingle()) {
-                myDFPlayer.playFolder(directory_buttons_2, random(track_button_count));
-        }
-        if (butt3.isSingle()) {
-                myDFPlayer.playFolder(directory_buttons_3, random(track_button_count));
-        }
-        if (butt1.isHold()) {
-                myDFPlayer.playFolder(directory_buttons_1, random(track_button_count));
-                nowTime = millis();
-                while ((millis()-nowTime)<3000) {
-                        if (butt1.isRelease()) {
-                                myDFPlayer.pause();
-                                break;
-                        }
+        // выключить воспроизведение, если нажата кнопка или отпущенна
+        if (myDFPlayer.readState()) {
+                if ((butt1.isRelease()) || (butt2.isRelease()) || (butt3.isRelease()) || (butt1.isSingle()) || (butt2.isSingle()) || (butt3.isSingle())) {
+                        myDFPlayer.pause();
                 }
         }
-        if (butt2.isHold()) {
-                myDFPlayer.playFolder(directory_buttons_2, random(track_button_count));
-                nowTime = millis();
-                while ((millis()-nowTime)<3000) {
-                        if (butt1.isRelease()) {
-                                myDFPlayer.pause();
-                                break;
-                        }
+        else {
+                // Включить трек, если нажата кнопка
+                if (butt1.isSingle()) {
+                        track_count = myDFPlayer.readFileCountsInFolder(1);
+                        myDFPlayer.playFolder(directory_buttons_1, random(track_count));
                 }
-        }
-        if (butt3.isHold()) {
-                myDFPlayer.playFolder(directory_buttons_3, random(track_button_count));
-                nowTime = millis();
-                while ((millis()-nowTime)<3000) {
-                        if (butt1.isRelease()) {
-                                myDFPlayer.pause();
-                                break;
-                        }
+                else if (butt1.isHold()) {
+                        track_count = myDFPlayer.readFileCountsInFolder(1);
+                        myDFPlayer.playFolder(directory_buttons_1, random(track_count));
+                }
+
+                if (butt2.isSingle()) {
+                        track_count = myDFPlayer.readFileCountsInFolder(2);
+                        myDFPlayer.playFolder(directory_buttons_2, random(track_count));
+                }
+                else if (butt2.isHold()) {
+                        track_count = myDFPlayer.readFileCountsInFolder(2);
+                        myDFPlayer.playFolder(directory_buttons_2, random(track_count));
+                }
+
+                if (butt3.isSingle()) {
+                        track_count = myDFPlayer.readFileCountsInFolder(3);
+                        myDFPlayer.playFolder(directory_buttons_3, random(track_count));
+                }
+                else if (butt3.isHold()) {
+                        track_count = myDFPlayer.readFileCountsInFolder(3);
+                        myDFPlayer.playFolder(directory_buttons_3, random(track_count));
                 }
         }
 }
