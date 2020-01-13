@@ -17,7 +17,7 @@ GButton butt3(BUT3_PIN);
 #define SS_RX 9
 #define SS_TX 8
 
-#define track_lenth 3000 // Длинна трека в милисекундах для проверки
+
 #define directory_buttons_1 50 // Папка с мелодиями кнопок
 #define directory_buttons_2 51
 #define directory_buttons_3 52
@@ -25,7 +25,7 @@ GButton butt3(BUT3_PIN);
 int track_count = 1; // количесто треков в каждой папке
 int volume = 15; // Гормкость 0-30
 
-SoftwareSerial mySoftwareSerial(SS_RX, SS_TX);  // RX, TX
+SoftwareSerial playerSerial(SS_RX, SS_TX);  // RX, TX
 DFRobotDFPlayerMini myDFPlayer;
 
 
@@ -55,6 +55,9 @@ int readCommand() {
         int signalsCount = 1; // Количесво поступающих сигналов
         while (true) {
                 if ((millis() - nowTime)>DELAY_SIGNALS) {
+                        if (digitalRead(ALARM_PIN)) {
+                                signalsCount = 0;
+                        }
                         return signalsCount;
                 }
                 if (digitalRead(ALARM_PIN)) {
@@ -68,7 +71,7 @@ int readCommand() {
 
 
 void setup() {
-        mySoftwareSerial.begin(9600);
+        playerSerial.begin(9600);
         Serial.begin(9600); // Вывод
         // Для сигнализации
         pinMode(ALARM_PIN, INPUT);
@@ -77,8 +80,8 @@ void setup() {
         // rtc.writeProtect(false);
         // rtc.halt(false);
         // Подключение плеера
-        // ADCSRA &= ~(1 << ADEN);
-        if (!myDFPlayer.begin(mySoftwareSerial)) { // запуск плеера//инициализац//более 2 секунд
+        delay(500);
+        if (!myDFPlayer.begin(playerSerial)) { // запуск плеера//инициализац//более 2 секунд
                 Serial.println(F("Ошибка подключения плеера:"));
                 Serial.println(F("1.Проверьте подключение!"));
                 Serial.println(F("2.Пожалуйста, вставьте cd карту!"));
