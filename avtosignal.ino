@@ -71,11 +71,17 @@ int readCommand() {
 
 
 void setup() {
-        playerSerial.begin(9600);
         Serial.begin(9600); // Вывод
+        Serial.println("Out 9600");
+
+        playerSerial.begin(9600);
+        Serial.println("playerSerial begin");
         // Для сигнализации
         pinMode(ALARM_PIN, INPUT);
+        Serial.println("ALARM_PIN pinmode");
+
         attachInterrupt(digitalPinToInterrupt(ALARM_PIN), inter_alrm, RISING);
+        Serial.println("ALARM_PIN attach interrupt");
         // Часы
         // rtc.writeProtect(false);
         // rtc.halt(false);
@@ -83,10 +89,9 @@ void setup() {
         delay(500);
         if (!myDFPlayer.begin(playerSerial)) { // запуск плеера//инициализац//более 2 секунд
                 Serial.println(F("Ошибка подключения плеера:"));
-                Serial.println(F("1.Проверьте подключение!"));
-                Serial.println(F("2.Пожалуйста, вставьте cd карту!"));
                 while(true);
         }
+        Serial.println("Setting player");
         myDFPlayer.setTimeOut(500);
         myDFPlayer.outputDevice(DFPLAYER_DEVICE_SD);
         myDFPlayer.volume(volume); //громкость (0~30).
@@ -105,6 +110,13 @@ void loop() {
                 delay(50);
                 track_count = myDFPlayer.readFileCountsInFolder(signals);
                 myDFPlayer.playFolder(signals, random(track_count));
+                Serial.print("PLAY track > ");
+                Serial.print("\t");
+                Serial.print(random(track_count));
+                Serial.print("\t");
+                Serial.print("folder > ");
+                Serial.print("\t");
+                Serial.print(signals);
         }
 
         // Проверка времени
@@ -133,28 +145,70 @@ void loop() {
                 if (butt1.isSingle()) {
                         track_count = myDFPlayer.readFileCountsInFolder(1);
                         myDFPlayer.playFolder(directory_buttons_1, random(track_count));
+                        Serial.print("PLAY track > ");
+                        Serial.print("\t");
+                        Serial.print(random(track_count));
+                        Serial.print("\t");
+                        Serial.print("folder > ");
+                        Serial.print("\t");
+                        Serial.print(directory_buttons_1);
                 }
                 else if (butt1.isHold()) {
                         track_count = myDFPlayer.readFileCountsInFolder(1);
                         myDFPlayer.playFolder(directory_buttons_1, random(track_count));
+                        Serial.print("PLAY track > ");
+                        Serial.print("\t");
+                        Serial.print(random(track_count));
+                        Serial.print("\t");
+                        Serial.print("folder > ");
+                        Serial.print("\t");
+                        Serial.print(directory_buttons_1);
                 }
 
                 if (butt2.isSingle()) {
                         track_count = myDFPlayer.readFileCountsInFolder(2);
                         myDFPlayer.playFolder(directory_buttons_2, random(track_count));
+                        Serial.print("PLAY track > ");
+                        Serial.print("\t");
+                        Serial.print(random(track_count));
+                        Serial.print("\t");
+                        Serial.print("folder > ");
+                        Serial.print("\t");
+                        Serial.print(directory_buttons_2);
                 }
                 else if (butt2.isHold()) {
                         track_count = myDFPlayer.readFileCountsInFolder(2);
                         myDFPlayer.playFolder(directory_buttons_2, random(track_count));
+                        Serial.print("PLAY track > ");
+                        Serial.print("\t");
+                        Serial.print(random(track_count));
+                        Serial.print("\t");
+                        Serial.print("folder > ");
+                        Serial.print("\t");
+                        Serial.print(directory_buttons_2);
                 }
 
                 if (butt3.isSingle()) {
                         track_count = myDFPlayer.readFileCountsInFolder(3);
                         myDFPlayer.playFolder(directory_buttons_3, random(track_count));
+                        Serial.print("PLAY track > ");
+                        Serial.print("\t");
+                        Serial.print(random(track_count));
+                        Serial.print("\t");
+                        Serial.print("folder > ");
+                        Serial.print("\t");
+                        Serial.print(directory_buttons_3);
                 }
                 else if (butt3.isHold()) {
                         track_count = myDFPlayer.readFileCountsInFolder(3);
                         myDFPlayer.playFolder(directory_buttons_3, random(track_count));
+                        Serial.print("PLAY track > ");
+                        Serial.print("\t");
+                        Serial.print(random(track_count));
+                        Serial.print("\t");
+                        Serial.print("folder > ");
+                        Serial.print("\t");
+                        Serial.print(directory_buttons_3);
                 }
         }
 }
