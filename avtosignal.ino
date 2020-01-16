@@ -15,8 +15,8 @@ GButton butt3(BUT3_PIN);
 #include <SoftwareSerial.h>
 #include <DFRobotDFPlayerMini.h>
 
-#define SS_RX 9
-#define SS_TX 8
+#define SS_RX 3
+#define SS_TX 2
 
 
 #define directory_buttons_1 50 // Папка с мелодиями кнопок
@@ -40,9 +40,9 @@ Time switch_vol_1(2013, 21, 00, 1, 38, 50, Time::kSunday); // Время пер�
 Time switch_vol_2(2013, 8, 00, 1, 38, 50, Time::kSunday); // Время переключения громкости 2
 
 namespace {
-const int kCePin   = 5;  // Chip Enable
-const int kIoPin   = 6;  // Input/Output
-const int kSclkPin = 7;  // Serial Clock
+const int kCePin   = 8;  // Chip Enable
+const int kIoPin   = 9;  // Input/Output
+const int kSclkPin = 10;  // Serial Clock
 
 DS1302 rtc(kCePin, kIoPin, kSclkPin);
 }
