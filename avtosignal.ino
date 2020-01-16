@@ -1,3 +1,4 @@
+#include <stdio.h>
 // Для кнопок
 #include "GyverButton.h"
 
@@ -30,16 +31,21 @@ DFRobotDFPlayerMini myDFPlayer;
 
 
 // Для часов
-// #include <DS1302.h>
+#include <DS1302.h>
 
-// const int kCePin   = 5;  // Chip Enable
-// const int kIoPin   = 6;  // Input/Output
-// const int kSclkPin = 7;  // Serial Clock
-// Time switch_vol_1(2013, 21, 00, 1, 38, 50, Time::kSunday); // Время переключения громкости 1
-// Time switch_vol_2(2013, 8, 00, 1, 38, 50, Time::kSunday); // Время переключения громкости 2
+Time currenttime(2013, 9, 22, 1, 38, 50, Time::kSunday); // Текущее время, если настройка
+#define isSetTime false // Если нужна настройка времени
 
-// DS1302 rtc(kCePin, kIoPin, kSclkPin);
+Time switch_vol_1(2013, 21, 00, 1, 38, 50, Time::kSunday); // Время переключения громкости 1
+Time switch_vol_2(2013, 8, 00, 1, 38, 50, Time::kSunday); // Время переключения громкости 2
 
+namespace {
+const int kCePin   = 5;  // Chip Enable
+const int kIoPin   = 6;  // Input/Output
+const int kSclkPin = 7;  // Serial Clock
+
+DS1302 rtc(kCePin, kIoPin, kSclkPin);
+}
 
 // Для входа сигнализации
 #define ALARM_PIN 2 // Пин подключения сигналов после оптореле
@@ -83,8 +89,17 @@ void setup() {
         attachInterrupt(digitalPinToInterrupt(ALARM_PIN), inter_alrm, RISING);
         Serial.println("ALARM_PIN attach interrupt");
         // Часы
-        // rtc.writeProtect(false);
-        // rtc.halt(false);
+        if (isSetTime) {
+                Serial.println("setting time");
+                rtc.writeProtect(false);
+                rtc.halt(false);
+                rtc.time(currenttime);
+        }
+        else {
+                Serial.println("skipping setting time");
+                rtc.writeProtect(true);
+        }
+
         // Подключение плеера
         delay(500);
         if (!myDFPlayer.begin(playerSerial)) { // запуск плеера//инициализац//более 2 секунд
@@ -120,13 +135,13 @@ void loop() {
         }
 
         // Проверка времени
-        // Time t = rtc.time();
-        // if ((t.hr==switch_vol_1.hr) & (t.min==switch_vol_1.min)) {
-        // volume = 15;
-        // }
-        // else if ((t.hr==switch_vol_2.hr) & (t.min==switch_vol_2.min)) {
-        // volume = 30;
-        // }
+        Time t = rtc.time();
+        if ((t.hr==switch_vol_1.hr) & (t.min==switch_vol_1.min)) {
+                volume = 15;
+        }
+        else if ((t.hr==switch_vol_2.hr) & (t.min==switch_vol_2.min)) {
+                volume = 30;
+        }
 
 
         // Проверка кнопки
