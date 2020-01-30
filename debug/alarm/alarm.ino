@@ -10,14 +10,16 @@ int readCommand() {
         int signalsCount = 1; // Количесво поступающих сигналов
         while (true) {
                 if ((millis() - nowTime)>DELAY_SIGNALS) {
-                        if (digitalRead(ALARM_PIN)) {
-                                signalsCount = 0;
-                        }
+                        // if (is_alrm) {
+                        // signalsCount = 0;
+                        // }
                         return signalsCount;
                 }
-                if (digitalRead(ALARM_PIN)) {
+                if (is_alrm) {
                         nowTime = millis();
                         signalsCount++;
+                        is_alrm = false;
+                        delay(DELAY_SIGNALS-1);
                 }
         }
 
