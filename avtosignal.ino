@@ -83,36 +83,39 @@ void setup() {
         playerSerial.begin(9600);
         Serial.println("playerSerial begin");
         // Для сигнализации
-        pinMode(ALARM_PIN, INPUT);
-        Serial.println("ALARM_PIN pinmode");
+        // pinMode(ALARM_PIN, INPUT);
+        // Serial.println("ALARM_PIN pinmode");
 
         attachInterrupt(digitalPinToInterrupt(ALARM_PIN), inter_alrm, RISING);
         Serial.println("ALARM_PIN attach interrupt");
-        // Часы
-        if (isSetTime) {
+        /*
+           Часы
+           if (isSetTime) {
                 Serial.println("setting time");
                 rtc.writeProtect(false);
                 rtc.halt(false);
                 rtc.time(currenttime);
-        }
-        else {
+           }
+           else {
                 Serial.println("skipping setting time");
                 rtc.writeProtect(true);
-        }
+           }
+         */
 
         // Подключение плеера
         delay(500);
         if (!myDFPlayer.begin(playerSerial)) { // запуск плеера//инициализац//более 2 секунд
                 Serial.println(F("Ошибка подключения плеера:"));
-                while(true);
         }
-        Serial.println("Setting player");
-        myDFPlayer.setTimeOut(500);
-        myDFPlayer.outputDevice(DFPLAYER_DEVICE_SD);
-        myDFPlayer.volume(volume); //громкость (0~30).
-        myDFPlayer.EQ(DFPLAYER_EQ_NORMAL);
-        myDFPlayer.outputDevice(DFPLAYER_DEVICE_SD);
-        delay(200); // даем немного времени,ждем начало проигрывания
+        else {
+                Serial.println("Setting player");
+                myDFPlayer.setTimeOut(500);
+                myDFPlayer.outputDevice(DFPLAYER_DEVICE_SD);
+                myDFPlayer.volume(volume); //громкость (0~30).
+                myDFPlayer.EQ(DFPLAYER_EQ_NORMAL);
+                myDFPlayer.outputDevice(DFPLAYER_DEVICE_SD);
+                delay(200); // даем немного времени,ждем начало проигрывания
+        }
 }
 
 void loop() {
