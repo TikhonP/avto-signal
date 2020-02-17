@@ -1,32 +1,39 @@
 #define ALARM_PIN 2 // Пин подключения сигналов после оптореле
-#define DELAY_SIGNALS 1000 // Задержка между сигналами в миллисекундах
+#define SIGNALS_TIME 1000 // Задержка между сигналами в миллисекундах
+#define SIGNALS_DELAY_TIME 300
+#define MAX_SIGNALS 70
+#define RATTLING_COEF 0.7
 bool is_alrm = false;
+
 
 unsigned long nowTime; // Последнее время срабатывания сигнала
 int signals;
-
+//
 
 int readCommand() {
         int signalsCount = 1; // Количесво поступающих сигналов
-        while (true) {
-                if ((millis() - nowTime)>DELAY_SIGNALS) {
-                        // if (is_alrm) {
-                        // signalsCount = 0;
-                        // }
-                        return signalsCount;
-                }
+        for (int i = 0; i<MAX_SIGNALS; i++) {
+          if
+
                 if (is_alrm) {
                         nowTime = millis();
-                        signalsCount++;
-                        is_alrm = false;
-                        delay(DELAY_SIGNALS-1);
+                        while (true) {
+                                if ((!is_alrm) && ((millis() - nowTime)>(SIGNALS_TIME*RATTLING_COEF))) {
+                                        if ((millis() - nowTime)>DELAY_SIGNALS) {
+
+                                        }
+                                }
+                        }
                 }
         }
-
 }
 
-void inter_alrm() {
+void alarm_up() {
         is_alrm = true;
+}
+
+void alarm_down() {
+        is_alrm = false;
 }
 
 
@@ -35,7 +42,9 @@ void setup() {
         Serial.println("Out 9600");
         // Для сигнализации
         pinMode(ALARM_PIN, INPUT);
-        attachInterrupt(0, inter_alrm, FALLING);
+        attachInterrupt(0, alarm_up, RISING);
+        attachInterrupt(0, alarm_down, FALLING);
+
         Serial.println("ALARM_PIN pinmode");
 }
 
