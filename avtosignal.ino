@@ -104,8 +104,8 @@ void loop() {
                 Serial.println("Тревога");
         }
         if (alrm.hasClicks()) {
-                signals = butt1.getClicks() + 1
-                          myDFPlayer.pause();
+                signals = butt1.getClicks() + 1;
+                myDFPlayer.pause();
                 delay(50);
                 track_count = myDFPlayer.readFileCountsInFolder(signals);
                 myDFPlayer.playFolder(signals, random(track_count));
