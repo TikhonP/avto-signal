@@ -49,31 +49,11 @@ DS1302 rtc(kCePin, kIoPin, kSclkPin);
 
 // Для входа сигнализации
 #define ALARM_PIN 2 // Пин подключения сигналов после оптореле
-#define DELAY_SIGNALS 300 // Задержка между сигналами в миллисекундах
-bool is_alrm = false;
+#define DELAY_SIGNALS 500 // Задержка между сигналами в миллисекундах
+GButton alrm(ALARM_PIN);
 
 unsigned long nowTime; // Последнее время срабатывания сигнала
 int signals;
-
-
-// Функция для подсчета количества сигналов
-int readCommand() {
-        int signalsCount = 1; // Количесво поступающих сигналов
-        while (true) {
-                if ((millis() - nowTime)>DELAY_SIGNALS) {
-                        if (digitalRead(ALARM_PIN)) {
-                                signalsCount = 0;
-                        }
-                        return signalsCount;
-                }
-                if (digitalRead(ALARM_PIN)) {
-                        nowTime = millis();
-                        signalsCount++;
-                }
-        }
-
-}
-
 
 
 void setup() {
@@ -82,12 +62,7 @@ void setup() {
 
         playerSerial.begin(9600);
         Serial.println("playerSerial begin");
-        // Для сигнализации
-        // pinMode(ALARM_PIN, INPUT);
-        // Serial.println("ALARM_PIN pinmode");
 
-        attachInterrupt(digitalPinToInterrupt(ALARM_PIN), inter_alrm, RISING);
-        Serial.println("ALARM_PIN attach interrupt");
         /*
            Часы
            if (isSetTime) {
@@ -120,10 +95,10 @@ void setup() {
 
 void loop() {
         // Проверка входа сигнализации
-        if (is_alrm) {
-                nowTime = millis(); // Запись текущего времени в миллисекундах,
-                                    // прошедшего с момента запуска, в переменную nowTime
-                signals = readCommand();
+        alrm.tick();
+
+        if (alrm.hasClicks()) {
+                signals = butt1.getClicks() + 1
                 myDFPlayer.pause();
                 delay(50);
                 track_count = myDFPlayer.readFileCountsInFolder(signals);
@@ -229,9 +204,4 @@ void loop() {
                         Serial.print(directory_buttons_3);
                 }
         }
-}
-
-
-void inter_alrm() {
-        is_alrm = true;
 }
