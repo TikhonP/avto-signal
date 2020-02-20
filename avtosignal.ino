@@ -96,10 +96,16 @@ void setup() {
 void loop() {
         // Проверка входа сигнализации
         alrm.tick();
-
+        if (alrm.isHold()) {
+                myDFPlayer.pause();
+                delay(50);
+                track_count = myDFPlayer.readFileCountsInFolder(0);
+                myDFPlayer.playFolder(0, random(track_count));
+                Serial.println("Тревога");
+        }
         if (alrm.hasClicks()) {
                 signals = butt1.getClicks() + 1
-                myDFPlayer.pause();
+                          myDFPlayer.pause();
                 delay(50);
                 track_count = myDFPlayer.readFileCountsInFolder(signals);
                 myDFPlayer.playFolder(signals, random(track_count));
