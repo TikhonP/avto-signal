@@ -47,6 +47,6 @@ void loop() {
         }
         if (wasclicked) {
                 Serial.print(clicks);
-                Serial.println("%d cliked!");
+                Serial.println("Cliked!");
         }
 }
