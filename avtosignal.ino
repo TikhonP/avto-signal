@@ -1,4 +1,3 @@
-// #include <stdio.h>
 // Для кнопок
 #include "GyverButton.h"
 
@@ -48,7 +47,7 @@ DS1302 rtc(kCePin, kIoPin, kSclkPin);
 }
 
 // Для входа сигнализации
-#define ALARM_PIN 2 // Пин подключения сигналов после оптореле
+#define ALARM_PIN 5 // Пин подключения сигналов после оптореле
 #define DELAY_SIGNALS 500 // Задержка между сигналами в миллисекундах
 GButton alrm(ALARM_PIN);
 
@@ -82,15 +81,17 @@ void setup() {
         if (!myDFPlayer.begin(playerSerial)) { // запуск плеера//инициализац//более 2 секунд
                 Serial.println(F("Ошибка подключения плеера:"));
         }
-        else {
-                Serial.println("Setting player");
-                myDFPlayer.setTimeOut(500);
-                myDFPlayer.outputDevice(DFPLAYER_DEVICE_SD);
-                myDFPlayer.volume(volume); //громкость (0~30).
-                myDFPlayer.EQ(DFPLAYER_EQ_NORMAL);
-                myDFPlayer.outputDevice(DFPLAYER_DEVICE_SD);
-                delay(200); // даем немного времени,ждем начало проигрывания
-        }
+
+        Serial.println("Setting player");
+        myDFPlayer.setTimeOut(500);
+        myDFPlayer.outputDevice(DFPLAYER_DEVICE_SD);
+        myDFPlayer.volume(volume);         //громкость (0~30).
+        myDFPlayer.EQ(DFPLAYER_EQ_NORMAL);
+        myDFPlayer.outputDevice(DFPLAYER_DEVICE_SD);
+        delay(200);         // даем немного времени,ждем начало проигрывания
+        Serial.println("Playing...");
+        int track_count = myDFPlayer.readFileCountsInFolder(1);
+        myDFPlayer.playFolder(1, random(track_count));
 }
 
 void loop() {
