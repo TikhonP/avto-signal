@@ -59,6 +59,10 @@ void setup() {
         Serial.begin(9600); // Вывод
         Serial.println("Out 9600");
 
+
+        alrm.setTickMode(MANUAL)
+
+
         playerSerial.begin(9600);
         Serial.println("playerSerial begin");
 
@@ -92,20 +96,23 @@ void setup() {
         Serial.println("Playing...");
         int track_count = myDFPlayer.readFileCountsInFolder(1);
         myDFPlayer.playFolder(1, random(track_count));
-        delay(1000);
+        delay(5000);
 }
 
 void loop() {
         // Проверка входа сигнализации
         alrm.tick();
+
         if (alrm.isHold()) {
                 myDFPlayer.pause();
                 delay(50);
                 track_count = myDFPlayer.readFileCountsInFolder(0);
                 myDFPlayer.playFolder(0, random(track_count));
+                delay(3000);
                 Serial.println("Тревога");
         }
-        if (alrm.hasClicks()) {
+
+        else if (alrm.hasClicks()) {
                 signals = butt1.getClicks() + 1;
                 myDFPlayer.pause();
                 delay(50);
