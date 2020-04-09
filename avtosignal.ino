@@ -59,7 +59,9 @@ void sound(int signls) {
         myDFPlayer.pause();
         delay(50);
         track_count = myDFPlayer.readFileCountsInFolder(signls);
+        delay(50);
         myDFPlayer.playFolder(signls, random(track_count));
+        delay(50);
         Serial.print("PLAY track > ");
         Serial.print(random(track_count));
         Serial.print("  folder > ");
@@ -115,17 +117,32 @@ void setup() {
 }
 
 void loop() {
-
+        if (myDFPlayer.available()) {
+                printDetail(myDFPlayer.readType(), myDFPlayer.read()); //Print the detail message from DFPlayer to handle different errors and states.
+        }
         // Проверка входа сигнализации
         alrm.tick();
-
         if (alrm.isHold()) {
-                sound(0);
+                myDFPlayer.enableLoop();
+                delay(50);
+                myDFPlayer.pause();
+                delay(50);
+                track_count = myDFPlayer.readFileCountsInFolder(0);
+                delay(50);
+                myDFPlayer.playFolder(0, random(track_count));
+                delay(50);
+                Serial.print("PLAY track > ");
+                Serial.print(random(track_count));
+                Serial.print("  folder > ");
+                Serial.println(0);
                 while (alrm.isHold()) {
                         alrm.tick();
                         Serial.println("Тревога");
                         delay(500);
                 }
+                myDFPlayer.pause();
+                delay(50);
+                myDFPlayer.disableLoop();
         }
         else if (alrm.hasClicks()) {
                 signals = alrm.getClicks();
@@ -175,4 +192,69 @@ void loop() {
 
                 }
         }
+}
+
+
+
+
+void printDetail(uint8_t type, int value){
+        switch (type) {
+        case TimeOut:
+                Serial.println(F("Time Out!"));
+                break;
+        case WrongStack:
+                Serial.println(F("Stack Wrong!"));
+                break;
+        case DFPlayerCardInserted:
+                Serial.println(F("Card Inserted!"));
+                break;
+        case DFPlayerCardRemoved:
+                Serial.println(F("Card Removed!"));
+                break;
+        case DFPlayerCardOnline:
+                Serial.println(F("Card Online!"));
+                break;
+        case DFPlayerUSBInserted:
+                Serial.println("USB Inserted!");
+                break;
+        case DFPlayerUSBRemoved:
+                Serial.println("USB Removed!");
+                break;
+        case DFPlayerPlayFinished:
+                Serial.print(F("Number:"));
+                Serial.print(value);
+                Serial.println(F(" Play Finished!"));
+                break;
+        case DFPlayerError:
+                Serial.print(F("DFPlayerError:"));
+                switch (value) {
+                case Busy:
+                        Serial.println(F("Card not found"));
+                        break;
+                case Sleeping:
+                        Serial.println(F("Sleeping"));
+                        break;
+                case SerialWrongStack:
+                        Serial.println(F("Get Wrong Stack"));
+                        break;
+                case CheckSumNotMatch:
+                        Serial.println(F("Check Sum Not Match"));
+                        break;
+                case FileIndexOut:
+                        Serial.println(F("File Index Out of Bound"));
+                        break;
+                case FileMismatch:
+                        Serial.println(F("Cannot Find File"));
+                        break;
+                case Advertise:
+                        Serial.println(F("In Advertise"));
+                        break;
+                default:
+                        break;
+                }
+                break;
+        default:
+                break;
+        }
+
 }
