@@ -56,6 +56,7 @@ int signals;
 
 
 void sound(int signls) {
+        checkerr()
         myDFPlayer.pause();
         delay(50);
         track_count = myDFPlayer.readFileCountsInFolder(signls);
@@ -66,6 +67,7 @@ void sound(int signls) {
         Serial.print(random(track_count));
         Serial.print("  folder > ");
         Serial.println(signls);
+        checkerr()
         // delay(2000);
 }
 
@@ -100,14 +102,14 @@ void setup() {
 
         // Подключение плеера
         delay(500);
-        if (!myDFPlayer.begin(playerSerial)) { // запуск плеера//инициализац//более 2 секунд
+        if (!myDFPlayer.begin(playerSerial)) { // запуск плеера //инициализац//более 2 секунд
                 Serial.println(F("Ошибка подключения плеера:"));
         }
 
         Serial.println("Setting player");
         myDFPlayer.setTimeOut(500);
         myDFPlayer.outputDevice(DFPLAYER_DEVICE_SD);
-        myDFPlayer.volume(volume);         //громкость (0~30).
+        myDFPlayer.volume(volume);         // громкость (0~30).
         myDFPlayer.EQ(DFPLAYER_EQ_NORMAL);
         myDFPlayer.outputDevice(DFPLAYER_DEVICE_SD);
         delay(200);         // даем немного времени,ждем начало проигрывания
@@ -117,9 +119,7 @@ void setup() {
 }
 
 void loop() {
-        if (myDFPlayer.available()) {
-                printDetail(myDFPlayer.readType(), myDFPlayer.read()); //Print the detail message from DFPlayer to handle different errors and states.
-        }
+        checkerr()
         // Проверка входа сигнализации
         alrm.tick();
         if (alrm.isHold()) {
@@ -127,9 +127,9 @@ void loop() {
                 delay(50);
                 myDFPlayer.pause();
                 delay(50);
-                track_count = myDFPlayer.readFileCountsInFolder(0);
+                track_count = myDFPlayer.readFileCountsInFolder(11);
                 delay(50);
-                myDFPlayer.playFolder(0, random(track_count));
+                myDFPlayer.playFolder(11, random(track_count));
                 delay(50);
                 Serial.print("PLAY track > ");
                 Serial.print(random(track_count));
@@ -164,17 +164,21 @@ void loop() {
         // Проверка кнопки
         butt1.tick();
         if (butt1.isSingle()) {
-                if (myDFPlayer.readState()) {
+                int st = myDFPlayer.readState();
+                Serial.println("State is %i", st);
+                if (st) {
                         myDFPlayer.pause();
                         Serial.println("Paused");
                 } else {
-                        sound(directory_buttons_1);
+                        sound(directory_buttons_2);
 
                 }
         }
         butt2.tick();
         if (butt2.isSingle()) {
-                if (myDFPlayer.readState()) {
+                int st = myDFPlayer.readState();
+                Serial.println("State is %i", st);
+                if (st) {
                         myDFPlayer.pause();
                         Serial.println("Paused");
                 } else {
@@ -184,7 +188,9 @@ void loop() {
         }
         butt3.tick();
         if (butt2.isSingle()) {
-                if (myDFPlayer.readState()) {
+                int st = myDFPlayer.readState();
+                Serial.println("State is %i", st);
+                if (st) {
                         myDFPlayer.pause();
                         Serial.println("Paused");
                 } else {
@@ -194,7 +200,11 @@ void loop() {
         }
 }
 
-
+void  {
+        if (myDFPlayer.available()) {
+                printDetail(myDFPlayer.readType(), myDFPlayer.read()); //Print the detail message from DFPlayer to handle different errors and states.
+        }
+}
 
 
 void printDetail(uint8_t type, int value){
