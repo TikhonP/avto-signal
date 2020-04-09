@@ -56,7 +56,7 @@ int signals;
 
 
 void sound(int signls) {
-        checkerr()
+        checkerr();
         myDFPlayer.pause();
         delay(50);
         track_count = myDFPlayer.readFileCountsInFolder(signls);
@@ -67,7 +67,7 @@ void sound(int signls) {
         Serial.print(random(track_count));
         Serial.print("  folder > ");
         Serial.println(signls);
-        checkerr()
+        checkerr();
         // delay(2000);
 }
 
@@ -119,7 +119,7 @@ void setup() {
 }
 
 void loop() {
-        checkerr()
+        checkerr();
         // Проверка входа сигнализации
         alrm.tick();
         if (alrm.isHold()) {
@@ -165,7 +165,8 @@ void loop() {
         butt1.tick();
         if (butt1.isSingle()) {
                 int st = myDFPlayer.readState();
-                Serial.println("State is %i", st);
+                Serial.print("State is ");
+                Serial.println(st);
                 if (st) {
                         myDFPlayer.pause();
                         Serial.println("Paused");
@@ -177,7 +178,8 @@ void loop() {
         butt2.tick();
         if (butt2.isSingle()) {
                 int st = myDFPlayer.readState();
-                Serial.println("State is %i", st);
+                Serial.print("State is ");
+                Serial.println(st);
                 if (st) {
                         myDFPlayer.pause();
                         Serial.println("Paused");
@@ -189,7 +191,8 @@ void loop() {
         butt3.tick();
         if (butt2.isSingle()) {
                 int st = myDFPlayer.readState();
-                Serial.println("State is %i", st);
+                Serial.print("State is ");
+                Serial.println(st);
                 if (st) {
                         myDFPlayer.pause();
                         Serial.println("Paused");
