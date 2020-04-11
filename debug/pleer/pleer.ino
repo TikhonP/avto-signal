@@ -30,7 +30,15 @@ void setup() {
         Serial.println("Playing...");
         int track_count = myDFPlayer.readFileCountsInFolder(1);
         myDFPlayer.playFolder(1, random(track_count));
+
+        delay (2000);
+        myDFPlayer.pause();
+
+        
 }
 
 void loop() {
+
+
+
 }
