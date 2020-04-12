@@ -29,6 +29,7 @@ int volume = 15; // Гормкость 0-30
 SoftwareSerial playerSerial(SS_RX, SS_TX);  // RX, TX
 DFRobotDFPlayerMini myDFPlayer;
 void checkerr();
+#define pleerdelay 200
 
 
 // Для часов
@@ -110,28 +111,33 @@ void loop() {
         // Проверка входа сигнализации
         alrm.tick();
         if (alrm.isHold()) {
-                myDFPlayer.enableLoop();
-                delay(50);
-                myDFPlayer.pause();
-                delay(50);
-                track_count = myDFPlayer.readFileCountsInFolder(11);
-                delay(50);
-                myDFPlayer.playFolder(11, random(track_count));
-                delay(50);
-                Serial.print("PLAY track > ");
-                Serial.print(random(track_count));
-                Serial.print("  folder > ");
-                Serial.println(0);
+                // myDFPlayer.enableLoop();
+                // delay(50);
+                // myDFPlayer.pause();
+                // delay(50);
+                // track_count = myDFPlayer.readFileCountsInFolder(11);
+                // delay(50);
+                // myDFPlayer.playFolder(11, random(track_count));
+                // delay(50);
+                // Serial.print("PLAY track > ");
+                // Serial.print(random(track_count));
+                // Serial.print("  folder > ");
+                // Serial.println(0);
+                sound(11);
                 while (alrm.isHold()) {
                         alrm.tick();
                         Serial.println("Тревога");
                         delay(500);
+                        playingstate = digitalRead(busy_pin);
+                        if (playingstate == HIGH) {
+                                sound(11);
+                        }
                 }
                 myDFPlayer.pause();
-                delay(50);
-                myDFPlayer.disableLoop();
+                delay(pleerdelay);
+                // myDFPlayer.disableLoop();
         }
-        else if (alrm.hasClicks()) {
+        if (alrm.hasClicks()) {
                 signals = alrm.getClicks();
                 sound(signals);
         }
@@ -151,59 +157,49 @@ void loop() {
         // Проверка кнопки
         butt1.tick();
         if (butt1.isSingle()) {
-                // int st = myDFPlayer.readState();
-                // Serial.print("State is ");
-                // Serial.println(st);
-                if (playingstate == LOW) {
-                        myDFPlayer.pause();
-                        Serial.println("Paused");
-                } else {
-                        sound(directory_buttons_2);
-
-                }
+                myDFPlayer.pause();
+                sound(directory_buttons_1, 1);
+        }
+        else if (butt1.isHold()) {
+                myDFPlayer.pause();
+                sound(directory_buttons_1, 2);
         }
         butt2.tick();
         if (butt2.isSingle()) {
-                // int st = myDFPlayer.readState();
-                // Serial.print("State is ");
-                // Serial.println(st);
-                if (playingstate == LOW) {
-                        myDFPlayer.pause();
-                        Serial.println("Paused");
-                } else {
-                        sound(directory_buttons_2);
-
-                }
+                myDFPlayer.pause();
+                sound(directory_buttons_2, 1);
+        }
+        else if (butt2.isHold()) {
+                myDFPlayer.pause();
+                sound(directory_buttons_2, 2);
         }
         butt3.tick();
-        if (butt2.isSingle()) {
-                // int st = myDFPlayer.readState();
-                // Serial.print("State is ");
-                // Serial.println(st);
-                if (playingstate == LOW) {
-                        myDFPlayer.pause();
-                        Serial.println("Paused");
-                } else {
-                        sound(directory_buttons_2);
-
-                }
+        if (butt3.isSingle()) {
+                myDFPlayer.pause();
+                sound(directory_buttons_3, 1);
+        }
+        else if (butt3.isHold()) {
+                myDFPlayer.pause();
+                sound(directory_buttons_3, 2);
         }
 }
 
 
-void sound(int signls) {
+void sound(int folder, int track_count=-1) {
         checkerr();
         myDFPlayer.pause();
-        delay(50);
-        track_count = myDFPlayer.readFileCountsInFolder(signls);
-        delay(50);
-        myDFPlayer.playFolder(signls, random(track_count));
+        delay(pleerdelay);
+        if (track_count==-1) {
+                track_count = myDFPlayer.readFileCountsInFolder(folder);
+                delay(pleerdelay);
+        }
+        myDFPlayer.playFolder(folder, random(track_count));
         // playingstate = true;
-        delay(50);
+        delay(pleerdelay);
         Serial.print("PLAY track > ");
         Serial.print(random(track_count));
         Serial.print("  folder > ");
-        Serial.println(signls);
+        Serial.println(folder);
         checkerr();
         // delay(2000);
 }
