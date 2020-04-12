@@ -20,6 +20,7 @@ GButton butt3(BUT3_PIN);
 boolean playingstate;
 SoftwareSerial playerSerial(SS_RX, SS_TX);  // RX, TX
 DFRobotDFPlayerMini myDFPlayer;
+unsigned long lastplaytime;
 
 
 // Для часов
@@ -73,6 +74,7 @@ void setup() {
 
 
         // Подключение плеера
+        pinMode(amp_power_pin, OUTPUT);
         pinMode(BUSY_PIN, INPUT);
         delay(200);
         if (!myDFPlayer.begin(playerSerial, false)) {
@@ -118,13 +120,17 @@ void loop() {
         // Проверка времени
         Time t = rtc.time();
 
-        if ((t.hr==switch_vol_1.hr) && (t.min==switch_vol_1.min))
+        if ((t.hr==switch_vol_1.hr) && (t.min==switch_vol_1.min)) {
                 volume = volume1;
-
-        else if ((t.hr==switch_vol_2.hr) && (t.min==switch_vol_2.min))
+                sound(time_play_folder_1);
+        }
+        else if ((t.hr==switch_vol_2.hr) && (t.min==switch_vol_2.min)) {
                 volume = volume2;
+                sound(time_play_folder_2);
+        }
 
-
+        if ((lastplaytime+turn_off_delay)<millis())
+                digitalWrite(amp_power_pin, LOW);
 
         // Проверка кнопки
         butt1.tick();
@@ -182,6 +188,7 @@ void loop() {
 
 
 void sound(int folder, int track_count=-1) {
+        digitalWrite(amp_power_pin, HIGH);
         delay(pleerdelay);
         myDFPlayer.pause();
         delay(pleerdelay);
@@ -190,6 +197,7 @@ void sound(int folder, int track_count=-1) {
                 track_count = random(track_count)+1;
                 delay(pleerdelay);
         }
+        lastplaytime = millis();
         myDFPlayer.playFolder(folder, track_count);
         delay(pleerdelay);
         Serial.print("PLAY track > ");
