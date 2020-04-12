@@ -24,7 +24,7 @@ GButton butt3(BUT3_PIN);
 
 boolean playingstate;
 int track_count = 1; // количесто треков в каждой папке
-int volume = 15; // Гормкость 0-30
+int volume = 28; // Гормкость 0-30
 
 SoftwareSerial playerSerial(SS_RX, SS_TX);  // RX, TX
 DFRobotDFPlayerMini myDFPlayer;
@@ -230,7 +230,7 @@ void sound(int folder, int track_count=-1) {
         playingstate = digitalRead(busy_pin);
         if (playingstate == HIGH) {
                 Serial.print("PAY ATTENTION ERROR WITH ");
-                Serial.print(track);
+                Serial.print(track_count);
                 Serial.print(" TRACK IN ");
                 Serial.print(folder);
                 Serial.print(" FOLDER!!!");
