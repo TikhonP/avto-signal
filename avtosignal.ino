@@ -29,7 +29,7 @@ int volume = 15; // Гормкость 0-30
 SoftwareSerial playerSerial(SS_RX, SS_TX);  // RX, TX
 DFRobotDFPlayerMini myDFPlayer;
 void checkerr();
-#define pleerdelay 200
+#define pleerdelay 70
 
 
 // Для часов
@@ -124,6 +124,7 @@ void loop() {
                 // Serial.print("  folder > ");
                 // Serial.println(0);
                 sound(11);
+                alrm.tick();
                 while (alrm.isHold()) {
                         alrm.tick();
                         Serial.println("Тревога");
@@ -163,6 +164,11 @@ void loop() {
         else if (butt1.isHold()) {
                 myDFPlayer.pause();
                 sound(directory_buttons_1, 2);
+                butt1.tick();
+                while (butt1.isHold()) {
+                        butt1.tick();
+                        delay(pleerdelay);
+                }
         }
         butt2.tick();
         if (butt2.isSingle()) {
@@ -172,6 +178,11 @@ void loop() {
         else if (butt2.isHold()) {
                 myDFPlayer.pause();
                 sound(directory_buttons_2, 2);
+                butt2.tick();
+                while (butt2.isHold()) {
+                        butt2.tick();
+                        delay(pleerdelay);
+                }
         }
         butt3.tick();
         if (butt3.isSingle()) {
@@ -181,6 +192,11 @@ void loop() {
         else if (butt3.isHold()) {
                 myDFPlayer.pause();
                 sound(directory_buttons_3, 2);
+                butt3.tick();
+                while (butt3.isHold()) {
+                        butt3.tick();
+                        delay(pleerdelay);
+                }
         }
 }
 
