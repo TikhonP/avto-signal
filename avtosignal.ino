@@ -206,11 +206,10 @@ void sound(int folder, int track_count=-1) {
         myDFPlayer.pause();
         delay(pleerdelay);
         if (track_count==-1) {
-                track_count = random(myDFPlayer.readFileCountsInFolder(folder));
+                track_count = random(myDFPlayer.readFileCountsInFolder(folder))+1;
                 delay(pleerdelay);
         }
         myDFPlayer.playFolder(folder, track_count);
-        // playingstate = true;
         delay(pleerdelay);
         Serial.print("PLAY track > ");
         Serial.print(track_count);
