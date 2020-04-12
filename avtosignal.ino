@@ -1,65 +1,42 @@
+// Copyright (c) 2020
+// Sketch for playing song for car alarm system
+//
+// Main sketch
+
+#include <GyverButton.h>
+#include <SoftwareSerial.h>
+#include <DFRobotDFPlayerMini.h>
+#include <DS1302.h>
+#include "avtosignal.h"
+
+
 // Для кнопок
-#include "GyverButton.h"
-
-#define BUT1_PIN 7
-#define BUT2_PIN 6
-#define BUT3_PIN 5
-
 GButton butt1(BUT1_PIN);
 GButton butt2(BUT2_PIN);
 GButton butt3(BUT3_PIN);
 
 
 // для плеера
-#include <SoftwareSerial.h>
-#include <DFRobotDFPlayerMini.h>
-
-#define SS_RX 3
-#define SS_TX 2
-#define busy_pin A0
-
-#define directory_buttons_1 50 // Папка с мелодиями кнопок
-#define directory_buttons_2 51
-#define directory_buttons_3 52
-
 boolean playingstate;
-int track_count = 1; // количесто треков в каждой папке
-int volume = 28; // Гормкость 0-30
-
 SoftwareSerial playerSerial(SS_RX, SS_TX);  // RX, TX
 DFRobotDFPlayerMini myDFPlayer;
-void checkerr();
-#define pleerdelay 100
 
 
 // Для часов
-// #include <DS1302.h>
-//
-// Time currenttime(2013, 9, 22, 1, 38, 50, Time::kSunday); // Текущее время, если настройка
-// #define isSetTime false // Если нужна настройка времени
-//
-// Time switch_vol_1(2013, 21, 00, 1, 38, 50, Time::kSunday); // Время переключения громкости 1
-// Time switch_vol_2(2013, 8, 00, 1, 38, 50, Time::kSunday); // Время переключения громкости 2
-//
-// namespace {
-// const int kCePin   = 8;  // Chip Enable
-// const int kIoPin   = 9;  // Input/Output
-// const int kSclkPin = 10;  // Serial Clock
-//
-// DS1302 rtc(kCePin, kIoPin, kSclkPin);
-// }
+namespace {
+const int kCePin   = KCEPIN;  // Chip Enable
+const int kIoPin   = KCEPIN;  // Input/Output
+const int kSclkPin = KCEPIN;  // Serial Clock
+DS1302 rtc(kCePin, kIoPin, kSclkPin);
+}
 
 // Для входа сигнализации
-#define ALARM_PIN 4 // Пин подключения сигналов после оптореле
-// #define DELAY_SIGNALS 500 // Задержка между сигналами в миллисекундах
 GButton alrm(ALARM_PIN);
 
-unsigned long nowTime; // Последнее время срабатывания сигнала
-int signals;
 
+void checkerr();
 void sound(int folder, int track_count=-1);
 
-#define randompin A4
 
 void setup() {
         Serial.begin(9600); // Вывод
@@ -83,23 +60,21 @@ void setup() {
         playerSerial.begin(9600);
         Serial.println("Staring playerSerial 9600...");
 
-        /*
-           Часы
-           if (isSetTime) {
-                Serial.println("setting time");
-                rtc.writeProtect(false);
-                rtc.halt(false);
-                rtc.time(currenttime);
-           }
-           else {
-                Serial.println("skipping setting time");
-                rtc.writeProtect(true);
-           }
-         */
+        // Часы
+        #ifdef SetTime
+        Serial.println("Setting time");
+        rtc.writeProtect(false);
+        rtc.halt(false);
+        rtc.time(currenttime);
+        #else
+        Serial.println("Skipping setting time");
+        rtc.writeProtect(true);
+        #endif
+
 
         // Подключение плеера
-        pinMode(busy_pin, INPUT);
-        delay(500);
+        pinMode(BUSY_PIN, INPUT);
+        delay(200);
         if (!myDFPlayer.begin(playerSerial, false)) {
                 Serial.println(F("Unable to connect pleer!"));
         }
@@ -109,15 +84,13 @@ void setup() {
         myDFPlayer.volume(volume);         // громкость (0~30).
         myDFPlayer.EQ(DFPLAYER_EQ_NORMAL);
         myDFPlayer.outputDevice(DFPLAYER_DEVICE_SD);
-        // delay(200);         // даем немного времени,ждем начало проигрывания
-        // Serial.println("Playing...");
-        // sound(0);
-        // delay(5000);
 }
+
 
 void loop() {
         checkerr();
-        playingstate = digitalRead(busy_pin);
+        playingstate = digitalRead(BUSY_PIN);
+
         // Проверка входа сигнализации
         alrm.tick();
         if (alrm.isHold()) {
@@ -128,32 +101,30 @@ void loop() {
                 while (alrm.isHold()) {
                         delay(500);
                         Serial.println("Тревога2");
-                        playingstate = digitalRead(busy_pin);
-                        if (playingstate == HIGH) {
+                        playingstate = digitalRead(BUSY_PIN);
+                        if (playingstate == HIGH)
                                 sound(11);
-                        }
                         alrm.tick();
                 }
                 delay(pleerdelay);
                 myDFPlayer.pause();
-                // myDFPlayer.disableLoop();
         }
         if (alrm.hasClicks()) {
-                signals = alrm.getClicks();
+                int signals = alrm.getClicks();
                 sound(signals);
         }
 
 
-        /*
-           // Проверка времени
-           Time t = rtc.time();
-           if ((t.hr==switch_vol_1.hr) & (t.min==switch_vol_1.min)) {
-                volume = 15;
-           }
-           else if ((t.hr==switch_vol_2.hr) & (t.min==switch_vol_2.min)) {
-                volume = 30;
-           }
-         */
+        // Проверка времени
+        Time t = rtc.time();
+
+        if ((t.hr==switch_vol_1.hr) && (t.min==switch_vol_1.min))
+                volume = volume1;
+
+        else if ((t.hr==switch_vol_2.hr) && (t.min==switch_vol_2.min))
+                volume = volume2;
+
+
 
         // Проверка кнопки
         butt1.tick();
@@ -211,12 +182,12 @@ void loop() {
 
 
 void sound(int folder, int track_count=-1) {
-        checkerr();
         delay(pleerdelay);
         myDFPlayer.pause();
         delay(pleerdelay);
         if (track_count==-1) {
-                track_count = random(myDFPlayer.readFileCountsInFolder(folder))+1;
+                track_count = myDFPlayer.readFileCountsInFolder(folder);
+                track_count = random(track_count)+1;
                 delay(pleerdelay);
         }
         myDFPlayer.playFolder(folder, track_count);
@@ -225,9 +196,8 @@ void sound(int folder, int track_count=-1) {
         Serial.print(track_count);
         Serial.print("  folder > ");
         Serial.println(folder);
-        checkerr();
         delay(pleerdelay);
-        playingstate = digitalRead(busy_pin);
+        playingstate = digitalRead(BUSY_PIN);
         if (playingstate == HIGH) {
                 Serial.print("PAY ATTENTION ERROR WITH ");
                 Serial.print(track_count);
@@ -237,12 +207,6 @@ void sound(int folder, int track_count=-1) {
         }
 }
 
-
-// void  checkerr() {
-//         if (myDFPlayer.available()) {
-//                 printDetail(myDFPlayer.readType(), myDFPlayer.read()); //Print the detail message from DFPlayer to handle different errors and states.
-//         }
-// }
 
 void checkerr(){
         if (myDFPlayer.available()) {
