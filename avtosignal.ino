@@ -217,7 +217,13 @@ void sound(int folder, int track_count=-1) {
         Serial.print("  folder > ");
         Serial.println(folder);
         checkerr();
-        // delay(2000);
+        delay(1000);
+        playingstate = digitalRead(busy_pin);
+        if (playingstate == HIGH) {
+          Serial.println("Error with playing. Delay 2 sec. Trying to replay...");
+          delay(2000);
+          sound(folder, track_count);
+        }
 }
 
 
