@@ -59,6 +59,7 @@ int signals;
 
 void sound(int folder, int track_count=-1);
 
+#define randompin A4
 
 void setup() {
         Serial.begin(9600); // Вывод
@@ -68,6 +69,15 @@ void setup() {
         butt1.setTickMode(MANUAL);
         butt2.setTickMode(MANUAL);
         butt3.setTickMode(MANUAL);
+
+
+        // random
+        unsigned long seed = 0;
+        for (int i = 0; i < 16; i++) {
+                seed *= 4;
+                seed += analogRead(randompin) & 3;
+        }
+        randomSeed(seed);
 
 
         playerSerial.begin(9600);
@@ -216,12 +226,14 @@ void sound(int folder, int track_count=-1) {
         Serial.print("  folder > ");
         Serial.println(folder);
         checkerr();
-        delay(1000);
+        delay(pleerdelay);
         playingstate = digitalRead(busy_pin);
         if (playingstate == HIGH) {
-          Serial.println("Error with playing. Delay 2 sec. Trying to replay...");
-          delay(2000);
-          sound(folder, track_count);
+                Serial.print("PAY ATTENTION ERROR WITH ");
+                Serial.print(track);
+                Serial.print(" TRACK IN ");
+                Serial.print(folder);
+                Serial.print(" FOLDER!!!");
         }
 }
 
