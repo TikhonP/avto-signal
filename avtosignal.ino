@@ -57,7 +57,7 @@ GButton alrm(ALARM_PIN);
 unsigned long nowTime; // Последнее время срабатывания сигнала
 int signals;
 
-void sound(int signls);
+void sound(int folder, int track_count=-1);
 
 
 void setup() {
