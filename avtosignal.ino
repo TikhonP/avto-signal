@@ -96,7 +96,7 @@ void loop() {
         playingstate = digitalRead(BUSY_PIN);
         if (playingstate == LOW) {
                 lastplaytime = millis();
-                Serial.println("LOW")
+                Serial.println("LOW");
         }
         else if ((lastplaytime+turn_off_delay)<millis())
                 digitalWrite(amp_power_pin, HIGH);
