@@ -38,6 +38,7 @@ GButton alrm(ALARM_PIN);
 void checkerr();
 void sound(int folder, int track_count=-1);
 
+int max_volume = 0;
 
 void setup() {
         Serial.begin(9600); // Вывод
@@ -97,9 +98,14 @@ void loop() {
         if (playingstate == LOW) {
                 lastplaytime = millis();
                 Serial.println("LOW");
+        } else {
+                if ((lastplaytime+turn_off_delay)<millis())
+                        digitalWrite(amp_power_pin, HIGH);
+                if (max_volume!=0) {
+                        volume = max_volume;
+                        max_volume = 0;
+                }
         }
-        else if ((lastplaytime+turn_off_delay)<millis())
-                digitalWrite(amp_power_pin, HIGH);
 
         // Проверка входа сигнализации
         alrm.tick();
@@ -129,14 +135,15 @@ void loop() {
         // Проверка времени
         Time t = rtc.time();
 
-        if ((t.hr==switch_vol_1.hr) && (t.min==switch_vol_1.min)) {
+        if ((t.hr==switch_vol_1.hr) && (t.min==switch_vol_1.min))
                 volume = volume1;
-                sound(time_play_folder_1);
-        }
-        else if ((t.hr==switch_vol_2.hr) && (t.min==switch_vol_2.min)) {
+        else if ((t.hr==switch_vol_2.hr) && (t.min==switch_vol_2.min))
                 volume = volume2;
+        if ((t.hr==play_1.hr) && (t.min==play_1.min))
+                sound(time_play_folder_1);
+        else if ((t.hr==play_2.hr) && (t.min==play_2.min))
                 sound(time_play_folder_2);
-        }
+
 
         // Проверка кнопок
         butt1.tick();
@@ -194,6 +201,10 @@ void loop() {
 
 
 void sound(int folder, int track_count=-1) {
+        if (folder==max_volume_folder) {
+                max_volume = volume;
+                volume = 30;
+        }
         digitalWrite(amp_power_pin, LOW);
         delay(pleerdelay);
         myDFPlayer.pause();
