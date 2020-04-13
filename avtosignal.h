@@ -40,7 +40,7 @@ int volume = 28;
 // Если хотите настроить время на модуле, раскомментируйте строчку ниже
 // (Уберите //) и задайте время в currenttime
 
-#define SetTime
+// #define SetTime
 
 // Задайте текущее время
 Time currenttime(2013, 9, 22, 1, 38, 50, Time::kSunday);

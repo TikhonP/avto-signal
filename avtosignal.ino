@@ -97,7 +97,6 @@ void loop() {
         playingstate = digitalRead(BUSY_PIN);
         if (playingstate == LOW) {
                 lastplaytime = millis();
-                Serial.println("LOW");
         } else {
                 if ((lastplaytime+turn_off_delay)<millis())
                         digitalWrite(amp_power_pin, HIGH);
@@ -134,7 +133,9 @@ void loop() {
 
         // Проверка времени
         Time t = rtc.time();
-
+        Serial.print(t.hr);
+        Serial.print(" : ");
+        Serial.println(t.min);
         if ((t.hr==switch_vol_1.hr) && (t.min==switch_vol_1.min))
                 volume = volume1;
         else if ((t.hr==switch_vol_2.hr) && (t.min==switch_vol_2.min))
