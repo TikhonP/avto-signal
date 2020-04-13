@@ -130,7 +130,7 @@ void loop() {
         }
 
         if ((lastplaytime+turn_off_delay)<millis())
-                digitalWrite(amp_power_pin, LOW);
+                digitalWrite(amp_power_pin, HIGH);
 
         // Проверка кнопки
         butt1.tick();
@@ -188,7 +188,7 @@ void loop() {
 
 
 void sound(int folder, int track_count=-1) {
-        digitalWrite(amp_power_pin, HIGH);
+        digitalWrite(amp_power_pin, LOW);
         delay(pleerdelay);
         myDFPlayer.pause();
         delay(pleerdelay);
