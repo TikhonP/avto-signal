@@ -98,6 +98,9 @@ void loop() {
                 lastplaytime = millis();
                 Serial.println("LOW")
         }
+        else if ((lastplaytime+turn_off_delay)<millis())
+                digitalWrite(amp_power_pin, HIGH);
+
         // Проверка входа сигнализации
         alrm.tick();
         if (alrm.isHold()) {
@@ -115,6 +118,7 @@ void loop() {
                 }
                 delay(pleerdelay);
                 myDFPlayer.pause();
+                lastplaytime = millis();
         }
         if (alrm.hasClicks()) {
                 int signals = alrm.getClicks();
@@ -133,9 +137,6 @@ void loop() {
                 volume = volume2;
                 sound(time_play_folder_2);
         }
-
-        if ((lastplaytime+turn_off_delay)<millis())
-                digitalWrite(amp_power_pin, HIGH);
 
         // Проверка кнопок
         butt1.tick();
@@ -217,6 +218,7 @@ void sound(int folder, int track_count=-1) {
                 Serial.print(folder);
                 Serial.print(" FOLDER!!!");
         }
+        lastplaytime = millis();
 }
 
 
