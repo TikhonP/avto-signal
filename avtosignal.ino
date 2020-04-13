@@ -94,8 +94,10 @@ void setup() {
 void loop() {
         checkerr();
         playingstate = digitalRead(BUSY_PIN);
-        if (playingstate == LOW)
+        if (playingstate == LOW) {
                 lastplaytime = millis();
+                Serial.println("LOW")
+        }
         // Проверка входа сигнализации
         alrm.tick();
         if (alrm.isHold()) {
@@ -246,13 +248,12 @@ void checkerr(){
                         Serial.println("USB Removed!");
                         break;
                 case DFPlayerPlayFinished:
-                        Serial.print(F("Number:"));
+                        Serial.print(F("Number: "));
                         Serial.print(value);
                         Serial.println(F(" Play Finished!"));
-                        delay(pleerdelay);
                         break;
                 case DFPlayerError:
-                        Serial.print(F("Pleer ERROR:"));
+                        Serial.print(F("Pleer ERROR: "));
                         switch (value) {
                         case Busy:
                                 Serial.println(F("Card not found"));
