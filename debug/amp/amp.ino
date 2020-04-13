@@ -1,4 +1,4 @@
-#define PIN_RELAY A7
+#define PIN_RELAY A1
 
 
 void setup()

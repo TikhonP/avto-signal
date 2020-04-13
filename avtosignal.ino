@@ -77,15 +77,17 @@ void setup() {
         pinMode(amp_power_pin, OUTPUT);
         pinMode(BUSY_PIN, INPUT);
         delay(200);
-        if (!myDFPlayer.begin(playerSerial, false)) {
+        if (!myDFPlayer.begin(playerSerial)) {
                 Serial.println(F("Unable to connect pleer!"));
+        } else {
+                Serial.println("Setting player");
+                myDFPlayer.setTimeOut(500);
+                myDFPlayer.outputDevice(DFPLAYER_DEVICE_SD);
+                myDFPlayer.volume(volume); // громкость (0~30).
+                myDFPlayer.EQ(DFPLAYER_EQ_NORMAL);
+                myDFPlayer.outputDevice(DFPLAYER_DEVICE_SD);
         }
-        Serial.println("Setting player");
-        myDFPlayer.setTimeOut(500);
-        myDFPlayer.outputDevice(DFPLAYER_DEVICE_SD);
-        myDFPlayer.volume(volume);         // громкость (0~30).
-        myDFPlayer.EQ(DFPLAYER_EQ_NORMAL);
-        myDFPlayer.outputDevice(DFPLAYER_DEVICE_SD);
+        digitalWrite(amp_power_pin, HIGH);
 }
 
 
@@ -132,7 +134,7 @@ void loop() {
         if ((lastplaytime+turn_off_delay)<millis())
                 digitalWrite(amp_power_pin, HIGH);
 
-        // Проверка кнопки
+        // Проверка кнопок
         butt1.tick();
         if (butt1.isSingle()) {
                 myDFPlayer.pause();
@@ -209,7 +211,7 @@ void sound(int folder, int track_count=-1) {
         if (playingstate == HIGH) {
                 Serial.print("PAY ATTENTION ERROR WITH ");
                 Serial.print(track_count);
-                Serial.print(" TRACK IN ");
+                Serial.print(" TRACK, IN ");
                 Serial.print(folder);
                 Serial.print(" FOLDER!!!");
         }
@@ -220,6 +222,7 @@ void checkerr(){
         if (myDFPlayer.available()) {
                 uint8_t type = myDFPlayer.readType();
                 int value = myDFPlayer.read();
+                Serial.print("Pleer info: ");
                 switch (type) {
                 case TimeOut:
                         Serial.println(F("Time Out!"));
@@ -243,14 +246,13 @@ void checkerr(){
                         Serial.println("USB Removed!");
                         break;
                 case DFPlayerPlayFinished:
-                        // playingstate = false;
                         Serial.print(F("Number:"));
                         Serial.print(value);
                         Serial.println(F(" Play Finished!"));
                         delay(pleerdelay);
                         break;
                 case DFPlayerError:
-                        Serial.print(F("DFPlayerError:"));
+                        Serial.print(F("Pleer ERROR:"));
                         switch (value) {
                         case Busy:
                                 Serial.println(F("Card not found"));

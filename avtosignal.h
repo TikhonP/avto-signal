@@ -72,5 +72,5 @@ Time switch_vol_2(2020, 8, 22, 1, 38, 50, Time::kSunday);
 #define pleerdelay 100
 
 // Пин управления питанием усилителя
-#define amp_power_pin A7
+#define amp_power_pin A1
 #define turn_off_delay 600000 // Задержка выключеня в милисеккундах
