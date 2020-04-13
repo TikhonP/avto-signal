@@ -94,7 +94,8 @@ void setup() {
 void loop() {
         checkerr();
         playingstate = digitalRead(BUSY_PIN);
-
+        if (playingstate == LOW)
+                lastplaytime = millis();
         // Проверка входа сигнализации
         alrm.tick();
         if (alrm.isHold()) {
@@ -199,7 +200,6 @@ void sound(int folder, int track_count=-1) {
                 track_count = random(track_count)+1;
                 delay(pleerdelay);
         }
-        lastplaytime = millis();
         myDFPlayer.playFolder(folder, track_count);
         delay(pleerdelay);
         Serial.print("PLAY track > ");
