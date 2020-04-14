@@ -14,20 +14,21 @@
 GButton butt1(BUT1_PIN);
 GButton butt2(BUT2_PIN);
 GButton butt3(BUT3_PIN);
+// Для входа сигнализации
+GButton alrm(ALARM_PIN);
 
 
 // для плеера
-boolean playingstate;
 SoftwareSerial playerSerial(SS_RX, SS_TX);  // RX, TX
 DFRobotDFPlayerMini myDFPlayer;
+
 unsigned long lastplaytime;
+boolean playingstate;
+int max_volume = 0;
 
 
 // Для часов
 iarduino_RTC clock (RTC_DS1302, RST, CLK, DAT);
-
-// Для входа сигнализации
-GButton alrm(ALARM_PIN);
 
 
 void checkerr();
@@ -35,11 +36,12 @@ void sound(int folder, int track_count=-1);
 void turnOnApm();
 void turnOffApm();
 
-int max_volume = 0;
 
 void setup() {
         Serial.begin(9600); // Вывод
         Serial.println("Loading...\nStarting serial output 9600");
+
+        turnOffApm();
 
         alrm.setTickMode(MANUAL);
         butt1.setTickMode(MANUAL);
@@ -83,7 +85,6 @@ void setup() {
                 myDFPlayer.EQ(DFPLAYER_EQ_NORMAL);
                 myDFPlayer.outputDevice(DFPLAYER_DEVICE_SD);
         }
-        turnOffApm();
 }
 
 
@@ -137,6 +138,11 @@ void loop() {
         else if (h==play_2_hour)
                 sound(time_play_folder_2);
 
+        if (millis()%20000==0) {
+                Serial.print(clock.gettime("d-m-Y, H:i:s, D"));
+                Serial.println(h);
+                delay(1);
+        }
 
         // Проверка кнопок
         butt1.tick();
