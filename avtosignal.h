@@ -29,9 +29,39 @@ int volume = 28;
 
 // ЧАСЫ
 
-#define KCEPIN 8    // kCePin пин
-#define KIOPIN 9    // kIoPin пин
-#define KSCLKPIN 10 // kSclkPin пин
+#define RST 8  // rst пин
+#define CLK 9  // clk пин
+#define DAT 10 // dat пин
+
+// Если хотите настроить время на модуле, раскомментируйте строчку ниже
+// (Уберите //) и задайте время в currenttime
+
+// #define SetTime
+
+// Задайте текущее время
+#define set_hour 16
+#define set_minute 44
+#define set_second 0
+#define set_day 14
+#define set_month 4
+#define set_year 20
+#define set_week_day 2
+
+#define switch_vol_1_hour 21
+#define volume1 15 // Громкость, которая будет включаться в это время (0-30)
+
+#define switch_vol_2_hour 9
+#define volume2 30 // Громкость для второго срабатывания
+
+#define play_1_hour 8
+#define time_play_folder_1 53 // Папка из которой будет включаться случайный трек,
+                              // в заданное выше время
+#define play_2_hour 20
+#define time_play_folder_2 53 // Аналогично
+
+
+
+
 
 // Формат Time: (год, месяц, число, час, минута, секунда, день недели)
 // Формат дня недели Time::kSunday - воскресенье,
@@ -40,8 +70,8 @@ int volume = 28;
 // Если хотите настроить время на модуле, раскомментируйте строчку ниже
 // (Уберите //) и задайте время в currenttime
 
-// #define SetTime
 
+/*
 // Задайте текущее время
 Time currenttime(2013, 9, 22, 1, 38, 50, Time::kSunday);
 // ВАЖНО! После загрузки платы с этой опцией отключите модуль часов,
@@ -64,7 +94,7 @@ Time play_1(2020, 8, 22, 8, 0, 0, Time::kSunday);
 // Аналогично первому второе включение трека
 Time play_2(2020, 8, 22, 20, 0, 0, Time::kSunday);
 #define time_play_folder_2 53 // Аналогично
-
+*/
 
 // ДРУГОЕ
 
@@ -81,6 +111,7 @@ Time play_2(2020, 8, 22, 20, 0, 0, Time::kSunday);
 #define amp_power_pin A1
 // Задержка выключеня в милисеккундах
 #define turn_off_delay 3000 // (1000 мс = 1 с)
+#define dinamic_pin A2
 
 // Папка с максимальной громкостью всегда
 #define max_volume_folder 6

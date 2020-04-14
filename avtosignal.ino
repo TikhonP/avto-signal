@@ -6,7 +6,7 @@
 #include <GyverButton.h>
 #include <SoftwareSerial.h>
 #include <DFRobotDFPlayerMini.h>
-#include <DS1302.h>
+#include <iarduino_RTC.h>
 #include "avtosignal.h"
 
 
@@ -24,12 +24,7 @@ unsigned long lastplaytime;
 
 
 // Для часов
-namespace {
-const int kCePin   = KCEPIN;  // Chip Enable
-const int kIoPin   = KCEPIN;  // Input/Output
-const int kSclkPin = KCEPIN;  // Serial Clock
-DS1302 rtc(kCePin, kIoPin, kSclkPin);
-}
+iarduino_RTC clock (RTC_DS1302, RST, CLK, DAT);
 
 // Для входа сигнализации
 GButton alrm(ALARM_PIN);
@@ -37,6 +32,8 @@ GButton alrm(ALARM_PIN);
 
 void checkerr();
 void sound(int folder, int track_count=-1);
+void turnOnApm();
+void turnOffApm();
 
 int max_volume = 0;
 
@@ -63,14 +60,12 @@ void setup() {
         Serial.println("Staring playerSerial 9600...");
 
         // Часы
+        clock.begin();
         #ifdef SetTime
         Serial.println("Setting time");
-        rtc.writeProtect(false);
-        rtc.halt(false);
-        rtc.time(currenttime);
+        clock.settime(set_second, set_minute, set_hour, set_day, set_month, set_year, set_week_day);
         #else
         Serial.println("Skipping setting time");
-        rtc.writeProtect(true);
         #endif
 
 
@@ -88,7 +83,7 @@ void setup() {
                 myDFPlayer.EQ(DFPLAYER_EQ_NORMAL);
                 myDFPlayer.outputDevice(DFPLAYER_DEVICE_SD);
         }
-        digitalWrite(amp_power_pin, HIGH);
+        turnOffApm();
 }
 
 
@@ -99,7 +94,7 @@ void loop() {
                 lastplaytime = millis();
         } else {
                 if ((lastplaytime+turn_off_delay)<millis())
-                        digitalWrite(amp_power_pin, HIGH);
+                        turnOffApm();
                 if (max_volume!=0) {
                         volume = max_volume;
                         max_volume = 0;
@@ -132,17 +127,14 @@ void loop() {
 
 
         // Проверка времени
-        Time t = rtc.time();
-        Serial.print(t.hr);
-        Serial.print(" : ");
-        Serial.println(t.min);
-        if ((t.hr==switch_vol_1.hr) && (t.min==switch_vol_1.min))
+        short h = clock.Hours;
+        if (h==switch_vol_1_hour)
                 volume = volume1;
-        else if ((t.hr==switch_vol_2.hr) && (t.min==switch_vol_2.min))
+        else if (h==switch_vol_2_hour)
                 volume = volume2;
-        if ((t.hr==play_1.hr) && (t.min==play_1.min))
+        if (h==play_1_hour)
                 sound(time_play_folder_1);
-        else if ((t.hr==play_2.hr) && (t.min==play_2.min))
+        else if (h==play_2_hour)
                 sound(time_play_folder_2);
 
 
@@ -206,7 +198,7 @@ void sound(int folder, int track_count=-1) {
                 max_volume = volume;
                 volume = 30;
         }
-        digitalWrite(amp_power_pin, LOW);
+        turnOnApm();
         delay(pleerdelay);
         myDFPlayer.pause();
         delay(pleerdelay);
@@ -231,6 +223,20 @@ void sound(int folder, int track_count=-1) {
                 Serial.print(" FOLDER!!!");
         }
         lastplaytime = millis();
+}
+
+
+void turnOnApm() {
+        digitalWrite(amp_power_pin, LOW);
+        delay(100);
+        digitalWrite(dinamic_pin, LOW);
+}
+
+
+void turnOffApm() {
+        digitalWrite(dinamic_pin, HIGH);
+        delay(100);
+        digitalWrite(amp_power_pin, HIGH);
 }
 
 
