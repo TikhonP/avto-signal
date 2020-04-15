@@ -43,7 +43,7 @@ int volume = 28;
 // Потом продолжайте использывание.
 
 // Задайте текущее время
-#define set_hour 16 // Час (0-24)
+#define set_hour 16 // Час (0-23)
 #define set_minute 44 // Минута (0-59)
 #define set_second 0 // Секунда (0-59)
 #define set_day 14 // Число (0-31)
@@ -52,20 +52,20 @@ int volume = 28;
 #define set_week_day 2 // День недели начиная с воскресенья (0-6)
                        // 0 - воскресенье, 1 - понедельник ... 6 - суббота
 
-const short switch_vol_1_hour = 21; // Час (0-24)
+const short switch_vol_1_hour = 21; // Час (0-23)
 const short switch_vol_1_minute = 0; // Минута (0-59)
 const short volume1 = 15; // Громкость, которая будет включаться в это время (0-30)
 
-const short switch_vol_2_hour = 9; // Час (0-24)
+const short switch_vol_2_hour = 9; // Час (0-23)
 const short switch_vol_2_minute = 0; // Минута (0-59)
 const short volume2 = 30; // Громкость для второго срабатывания
 
-const short play_1_hour = 8; // Час (0-24)
+const short play_1_hour = 8; // Час (0-23)
 const short play_1_minute = 0; // Минута (0-59)
 const short time_play_folder_1 = 53; // Папка из которой будет включаться случайный трек,
 // в заданное выше время
-const short play_2_hour = 20; // Час (0-24)
-const short play_1_minute = 0; // Минута (0-59)
+const short play_2_hour = 20; // Час (0-23)
+const short play_2_minute = 0; // Минута (0-59)
 const short time_play_folder_2 = 53; // Аналогично
 
 
