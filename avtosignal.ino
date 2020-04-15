@@ -139,17 +139,16 @@ void loop() {
         // Проверка времени
         if (nowTime%60000==0) {
                 int h = clock.Hours;
-                if (h==switch_vol_1_hour)
+                int m = clock.minutes;
+                if ((h==switch_vol_1_hour) && (m==switch_vol_1_minute))
                         volume = volume1;
-                else if (h==switch_vol_2_hour)
+                else if ((h==switch_vol_2_hour) && (m==switch_vol_2_minute))
                         volume = volume2;
-                if (h==play_1_hour)
+                if ((h==play_1_hour) && (m==play_1_minute))
                         sound(time_play_folder_1);
-                else if (h==play_2_hour)
+                else if ((h==play_2_hour) && (m==play_2_minute))
                         sound(time_play_folder_2);
                 Serial.print(clock.gettime("d-m-Y, H:i:s, D"));
-                Serial.println(h);
-                // delay(1);
         }
 
         // Проверка кнопок
