@@ -108,7 +108,7 @@ void loop() {
                         }
                 }
         }
-        
+
         // Проверка входа сигнализации
         alrm.tick();
         if (alrm.isHold()) {
@@ -145,8 +145,8 @@ void loop() {
                         sound(time_play_folder_1);
                 else if (h==play_2_hour)
                         sound(time_play_folder_2);
-                // Serial.print(clock.gettime("d-m-Y, H:i:s, D"));
-                // Serial.println(h);
+                Serial.print(clock.gettime("d-m-Y, H:i:s, D"));
+                Serial.println(h);
                 // delay(1);
         }
 
