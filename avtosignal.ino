@@ -137,7 +137,7 @@ void loop() {
 
 
         // Проверка времени
-        if (nowTime%60000==0) {
+        if (nowTime%30000==0) {
                 int h = clock.Hours;
                 int m = clock.minutes;
                 if ((h==switch_vol_1_hour) && (m==switch_vol_1_minute))
@@ -203,6 +203,8 @@ void loop() {
                 }
                 myDFPlayer.pause();
         }
+        if (nowTime%100000==0)
+                myDFPlayer.volume(volume);
 }
 
 
@@ -210,6 +212,7 @@ void sound(int folder, int track_count=-1) {
         if (folder==max_volume_folder) {
                 max_volume = volume;
                 volume = 30;
+                myDFPlayer.volume(volume);
         }
         turnOnApm();
         delay(pleerdelay);
