@@ -79,6 +79,7 @@ const int pleerdelay = 100;
 #define amp_power_pin A1
 // Задержка выключеня в милисеккундах
 const unsigned long turn_off_delay = 3000; // (1000 мс = 1 с)
+const int dinamic_turn_on_delay = 100; // 
 #define dinamic_pin A2
 
 // Папка с максимальной громкостью всегда

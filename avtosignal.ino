@@ -38,6 +38,8 @@ void turnOffApm();
 
 unsigned long nowTime;
 
+bool turnedoffapm = false;
+
 void setup() {
         Serial.begin(9600); // Вывод
         Serial.println("Loading...\nStarting serial output 9600");
@@ -240,15 +242,19 @@ void sound(int folder, int track_count=-1) {
 
 void turnOnApm() {
         digitalWrite(amp_power_pin, LOW);
-        delay(100);
+        delay(dinamic_turn_on_delay);
         digitalWrite(dinamic_pin, LOW);
+        turnedoffapm = false;
 }
 
 
 void turnOffApm() {
-        digitalWrite(dinamic_pin, HIGH);
-        delay(100);
-        digitalWrite(amp_power_pin, HIGH);
+        if (!turnedoffapm) {
+                digitalWrite(dinamic_pin, HIGH);
+                delay(dinamic_turn_on_delay);
+                digitalWrite(amp_power_pin, HIGH);
+                turnedoffapm = true;
+        }
 }
 
 
