@@ -19,7 +19,7 @@ GButton alrm(ALARM_PIN);
 
 
 // для плеера
-SoftwareSerial playerSerial(SS_RX, SS_TX);  // RX, TX
+SoftwareSerial playerSerial(SS_RX, SS_TX);
 DFRobotDFPlayerMini myDFPlayer;
 
 unsigned long lastplaytime;
@@ -73,6 +73,7 @@ void setup() {
 
         // Подключение плеера
         pinMode(amp_power_pin, OUTPUT);
+        pinMode(dinamic_pin, OUTPUT);
         pinMode(BUSY_PIN, INPUT);
         delay(200);
         if (!myDFPlayer.begin(playerSerial)) {
