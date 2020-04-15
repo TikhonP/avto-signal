@@ -6,14 +6,14 @@
 
 // КНОПКИ
 
-#define BUT1_PIN 7             // Пин первой кнопки
-#define directory_buttons_1 50 // Папка с мелодиями первой кнопоки
+#define BUT1_PIN 7           // Пин первой кнопки
+const short directory_buttons_1 = 50; // Папка с мелодиями первой кнопоки
 
 #define BUT2_PIN 6             // Пин второй кнопки
-#define directory_buttons_2 51 // Папка с мелодиями второй кнопоки
+const short directory_buttons_2 = 51; // Папка с мелодиями второй кнопоки
 
-#define BUT3_PIN 5             // Пин третьей кнопки
-#define directory_buttons_3 52 // Папка с мелодиями третьей кнопоки
+#define BUT3_PIN 5              // Пин третьей кнопки
+const short directory_buttons_3 = 52; // Папка с мелодиями третьей кнопоки
 
 
 // ПЛЕЕР
@@ -51,17 +51,17 @@ int volume = 28;
 #define set_year 20 // Год (20, 21, 22 ...)
 #define set_week_day 2 // День недели начиная с понедельника (1-7)
 
-#define switch_vol_1_hour 21 // Час (0-24)
-#define volume1 15 // Громкость, которая будет включаться в это время (0-30)
+const short switch_vol_1_hour = 21; // Час (0-24)
+const short volume1 = 15; // Громкость, которая будет включаться в это время (0-30)
 
-#define switch_vol_2_hour 9 // Час (0-24)
-#define volume2 30 // Громкость для второго срабатывания
+const short switch_vol_2_hour = 9; // Час (0-24)
+const short volume2 = 30; // Громкость для второго срабатывания
 
-#define play_1_hour 8 // Час (0-24)
-#define time_play_folder_1 53 // Папка из которой будет включаться случайный трек,
-                              // в заданное выше время
-#define play_2_hour 20 // Час (0-24)
-#define time_play_folder_2 53 // Аналогично
+const short play_1_hour = 8; // Час (0-24)
+const short time_play_folder_1 = 53; // Папка из которой будет включаться случайный трек,
+// в заданное выше время
+const short play_2_hour = 20; // Час (0-24)
+const short time_play_folder_2 = 53; // Аналогично
 
 
 // ДРУГОЕ
@@ -73,13 +73,13 @@ int volume = 28;
 #define randompin A4
 
 // Дефолтная задержка программы в мс
-#define pleerdelay 100
+const int pleerdelay = 100;
 
 // Пин управления питанием усилителя
 #define amp_power_pin A1
 // Задержка выключеня в милисеккундах
-#define turn_off_delay 3000 // (1000 мс = 1 с)
+const unsigned long turn_off_delay = 3000; // (1000 мс = 1 с)
 #define dinamic_pin A2
 
 // Папка с максимальной громкостью всегда
-#define max_volume_folder 6
+const short max_volume_folder = 6;

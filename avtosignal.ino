@@ -36,6 +36,7 @@ void sound(int folder, int track_count=-1);
 void turnOnApm();
 void turnOffApm();
 
+unsigned long nowTime;
 
 void setup() {
         Serial.begin(9600); // Вывод
@@ -65,7 +66,9 @@ void setup() {
         clock.begin();
         #ifdef SetTime
         Serial.println("Setting time");
-        clock.settime(set_second, set_minute, set_hour, set_day, set_month, set_year, set_week_day);
+        clock.settime(
+                set_second, set_minute, set_hour, set_day,
+                set_month, set_year, set_week_day);
         #else
         Serial.println("Skipping setting time");
         #endif
@@ -91,11 +94,12 @@ void setup() {
 
 void loop() {
         checkerr();
+        nowTime = millis();
         playingstate = digitalRead(BUSY_PIN);
         if (playingstate == LOW) {
-                lastplaytime = millis();
+                lastplaytime = nowTime;
         } else {
-                if ((lastplaytime+turn_off_delay)<millis())
+                if ((lastplaytime+turn_off_delay)<nowTime)
                         turnOffApm();
                 if (max_volume!=0) {
                         volume = max_volume;
@@ -120,7 +124,7 @@ void loop() {
                 }
                 delay(pleerdelay);
                 myDFPlayer.pause();
-                lastplaytime = millis();
+                lastplaytime = nowTime;
         }
         if (alrm.hasClicks()) {
                 int signals = alrm.getClicks();
@@ -129,8 +133,8 @@ void loop() {
 
 
         // Проверка времени
-        if (millis()%60000==0) {
-                short h = clock.Hours;
+        if (nowTime%60000==0) {
+                int h = clock.Hours;
                 if (h==switch_vol_1_hour)
                         volume = volume1;
                 else if (h==switch_vol_2_hour)
@@ -228,7 +232,7 @@ void sound(int folder, int track_count=-1) {
                 Serial.print(folder);
                 Serial.print(" FOLDER!!!");
         }
-        lastplaytime = millis();
+        lastplaytime = nowTime;
 }
 
 
