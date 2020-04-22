@@ -107,6 +107,7 @@ void loop() {
                         if (max_volume!=0) {
                                 volume = max_volume;
                                 max_volume = 0;
+                                myDFPlayer.volume(volume);
                         }
                 }
         }
@@ -142,8 +143,14 @@ void loop() {
                 int m = clock.minutes;
                 if ((h==switch_vol_1_hour) && (m==switch_vol_1_minute))
                         volume = volume1;
+                        myDFPlayer.volume(volume);
+                        Serial.print("Volume changed to ");
+                        Serial.println(volume);
                 else if ((h==switch_vol_2_hour) && (m==switch_vol_2_minute))
                         volume = volume2;
+                        myDFPlayer.volume(volume);
+                        Serial.print("Volume changed to ");
+                        Serial.println(volume);
                 if ((h==play_1_hour) && (m==play_1_minute))
                         sound(time_play_folder_1);
                 else if ((h==play_2_hour) && (m==play_2_minute))
