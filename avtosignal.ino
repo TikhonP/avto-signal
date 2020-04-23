@@ -138,7 +138,7 @@ void loop() {
 
 
         // Проверка времени
-        if (nowTime%30000==0) {
+        if (nowTime%40000==0) {
                 int h = clock.Hours;
                 int m = clock.minutes;
                 if ((h==switch_vol_1_hour) && (m==switch_vol_1_minute)) {
@@ -212,8 +212,6 @@ void loop() {
                 }
                 myDFPlayer.pause();
         }
-        if (nowTime%100000==0)
-                myDFPlayer.volume(volume);
 }
 
 
