@@ -138,7 +138,7 @@ void loop() {
 
 
         // Проверка времени
-        if (nowTime%58000==0) {
+        if (nowTime%60000==0) {
                 int h = clock.Hours;
                 int m = clock.minutes;
                 if ((h==switch_vol_1_hour) && (m==switch_vol_1_minute)) {
@@ -153,12 +153,14 @@ void loop() {
                         Serial.print("Volume changed to ");
                         Serial.println(volume);
                 }
-                if ((h==play_1_hour) && (m==play_1_minute))
+                if ((h==play_1_hour) && (m==play_1_minute)) {
                         sound(time_play_folder_1);
-                        delay(2);
-                else if ((h==play_2_hour) && (m==play_2_minute))
+                        delay(1);
+                }
+                else if ((h==play_2_hour) && (m==play_2_minute)) {
                         sound(time_play_folder_2);
-                        delay(2);
+                        delay(1);
+                }
                 Serial.println(clock.gettime("d-m-Y, H:i:s, D"));
         }
 
