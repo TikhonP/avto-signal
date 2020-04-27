@@ -28,8 +28,23 @@ int max_volume = 0;
 
 
 // Для часов
-iarduino_RTC clock (RTC_DS1302, RST, CLK, DAT);
-
+iarduino_RTC clock (RTC_DS1307);
+#ifdef SetTime
+const char* strM="JanFebMarAprMayJunJulAugSepOctNovDec";
+const char* sysT=__TIME__;
+const char* sysD=__DATE__;
+const int i[6] {(sysT[6]-48)*10+(sysT[7]-48), (sysT[3]-48)*10+(sysT[4]-48),
+                (sysT[0]-48)*10+(sysT[1]-48), (sysD[4]-48)*10+(sysD[5]-48),
+                ((int)memmem(strM,36,sysD,3)+3-(int)&strM[0])/3,
+                (sysD[9]-48)*10+(sysD[10]-48)};
+#define set_hour i[0] // Час (0-23)
+#define set_minute i[1] // Минута (0-59)
+#define set_second i[2] // Секунда (0-59)
+#define set_day i[3] // Число (0-31)
+#define set_month i[4] // Месяц (0-12)
+#define set_year i[5] // Год (20, 21, 22 ...)
+#define set_week_day 0 // День недели начиная с воскресенья (0-6)
+#endif
 
 void checkerr();
 void sound(int folder, int track_count=-1);
@@ -70,7 +85,7 @@ void setup() {
         Serial.println("Setting time");
         clock.settime(
                 set_second, set_minute, set_hour, set_day,
-                set_month, set_year, set_week_day);
+                set_month, set_year);
         #else
         Serial.println("Skipping setting time");
         #endif
