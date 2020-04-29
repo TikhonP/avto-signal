@@ -62,6 +62,7 @@ void setup() {
         turnOffApm();
 
         alrm.setTickMode(MANUAL);
+        alrm.setDirection(NORM_CLOSE);
         butt1.setTickMode(MANUAL);
         butt2.setTickMode(MANUAL);
         butt3.setTickMode(MANUAL);
