@@ -1,7 +1,7 @@
 # avto-signal
 
 Необходимые библиотеки:
-- [iarduino_RTC](https://github.com/tremaru/iarduino_RTC.git)
+- [RTClib](https://github.com/adafruit/RTClib)
 - [GyverButton](https://github.com/AlexGyver/GyverLibs/tree/master/GyverButton)
 - [DFRobotDFPlayerMini](https://github.com/DFRobot/DFRobotDFPlayerMini)
 

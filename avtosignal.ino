@@ -6,7 +6,8 @@
 #include <GyverButton.h>
 #include <SoftwareSerial.h>
 #include <DFRobotDFPlayerMini.h>
-#include <iarduino_RTC.h>
+// #include <iarduino_RTC.h>
+#include "RTClib.h"
 #include "avtosignal.h"
 
 
@@ -28,23 +29,25 @@ int max_volume = 0;
 
 
 // Для часов
-iarduino_RTC clock (RTC_DS1307);
-#ifdef SetTime
-const char* strM="JanFebMarAprMayJunJulAugSepOctNovDec";
-const char* sysT=__TIME__;
-const char* sysD=__DATE__;
-const int i[6] {(sysT[6]-48)*10+(sysT[6]-48), (sysT[3]-48)*10+(sysT[4]-48),
-                (sysT[0]-48)*10+(sysT[1]-48), (sysD[4]-48)*10+(sysD[5]-48),
-                ((int)memmem(strM,36,sysD,3)+3-(int)&strM[0])/3,
-                (sysD[9]-48)*10+(sysD[10]-48)};
-#define set_hour i[2] // Час (0-23)
-#define set_minute i[1] // Минута (0-59)
-#define set_second i[0] // Секунда (0-59)
-#define set_day i[3] // Число (0-31)
-#define set_month i[4] // Месяц (0-12)
-#define set_year i[5] // Год (20, 21, 22 ...)
-#define set_week_day 0 // День недели начиная с воскресенья (0-6)
-#endif
+// iarduino_RTC clock (RTC_DS1307);
+RTC_DS1307 rtc;
+char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+// #ifdef SetTime
+// const char* strM="JanFebMarAprMayJunJulAugSepOctNovDec";
+// const char* sysT=__TIME__;
+// const char* sysD=__DATE__;
+// const int i[6] {(sysT[6]-48)*10+(sysT[6]-48), (sysT[3]-48)*10+(sysT[4]-48),
+//                 (sysT[0]-48)*10+(sysT[1]-48), (sysD[4]-48)*10+(sysD[5]-48),
+//                 ((int)memmem(strM,36,sysD,3)+3-(int)&strM[0])/3,
+//                 (sysD[9]-48)*10+(sysD[10]-48)};
+// #define set_hour i[2] // Час (0-23)
+// #define set_minute i[1] // Минута (0-59)
+// #define set_second i[0] // Секунда (0-59)
+// #define set_day i[3] // Число (0-31)
+// #define set_month i[4] // Месяц (0-12)
+// #define set_year i[5] // Год (20, 21, 22 ...)
+// #define set_week_day 0 // День недели начиная с воскресенья (0-6)
+// #endif
 
 void checkerr();
 void sound(int folder, int track_count=-1);
@@ -81,15 +84,25 @@ void setup() {
         Serial.println("Staring playerSerial 9600...");
 
         // Часы
-        clock.begin();
-        #ifdef SetTime
-        Serial.println("Setting time");
-        clock.settime(
-                set_second, set_minute, set_hour, set_day,
-                set_month, set_year);
-        #else
-        Serial.println("Skipping setting time");
-        #endif
+        if (!rtc.begin()) {
+                Serial.println("Couldn't find clock");
+        }
+        if (!rtc.isrunning()) {
+                Serial.println("RTC is NOT running, let's set the time!");
+                rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+                Serial.println("Setting time");
+        } else {
+                Serial.println("Setting time");
+        }
+        // clock.begin();
+        // #ifdef SetTime
+        // Serial.println("Setting time");
+        // clock.settime(
+        //         set_second, set_minute, set_hour, set_day,
+        //         set_month, set_year);
+        // #else
+        // Serial.println("Skipping setting time");
+        // #endif
 
 
         // Подключение плеера
@@ -155,8 +168,9 @@ void loop() {
 
         // Проверка времени
         if (nowTime%60000==0) {
-                int h = clock.Hours;
-                int m = clock.minutes;
+                DateTime now = rtc.now();
+                int h = now.hour;
+                const uint8_t m = now.minute;
                 if ((h==switch_vol_1_hour) && (m==switch_vol_1_minute)) {
                         volume = volume1;
                         myDFPlayer.volume(volume);
@@ -177,7 +191,19 @@ void loop() {
                         sound(time_play_folder_2);
                         delay(1);
                 }
-                Serial.println(clock.gettime("d-m-Y, H:i:s"));
+                Serial.print(now.year(), DEC);
+                Serial.print('/');
+                Serial.print(now.month(), DEC);
+                Serial.print('/');
+                Serial.print(now.day(), DEC);
+                Serial.print(" (");
+                Serial.print(daysOfTheWeek[now.dayOfTheWeek()]);
+                Serial.print(") ");
+                Serial.print(now.hour(), DEC);
+                Serial.print(':');
+                Serial.print(now.minute(), DEC);
+                Serial.print(':');
+                Serial.println(now.second(), DEC);
         }
 
         // Проверка кнопок
